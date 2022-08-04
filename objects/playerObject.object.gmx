@@ -368,12 +368,12 @@ y+=vertMovY+horzMovY;
           <argument>
             <kind>1</kind>
             <string>///Set wall color
-switch (room_get_name(room))
+switch (room)
 {
-    case ("startMap"):
+    case (startMap):
         global.wallColor = $E1CCB1;
         break;
-    case ("dungeonMap"):
+    case (dungeonMap):
         global.wallColor = $5448c6;
         break;
 }
