@@ -32,10 +32,12 @@ switch (room)
     case(startMap):
     global.roomName = start;
     global.currentRoom = 0;
+    audio_play_sound(startPrison,64,true);
         break;
     case(dungeonMap):
     global.roomName = dungeon; 
     global.currentRoom = 1;
+    audio_play_sound(startDungeon,64,true);
         break;
     default:
     global.roomName = startTest; 
@@ -55,30 +57,6 @@ playerObject.x = global.playX;
 playerObject.y = global.playY;
 }
 </string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>211</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_sound</functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>6</kind>
-            <sound>startPrison</sound>
-          </argument>
-          <argument>
-            <kind>3</kind>
-            <string>1</string>
           </argument>
         </arguments>
       </action>

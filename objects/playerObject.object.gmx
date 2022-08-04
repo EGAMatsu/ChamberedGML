@@ -25,30 +25,6 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>direction</string>
-          </argument>
-          <argument>
-            <kind>0</kind>
-            <string>90</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>611</id>
-        <kind>6</kind>
-        <userelative>-1</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>dirVelo</string>
           </argument>
           <argument>
@@ -137,12 +113,62 @@ global.mapStart = false;
 isLoading = false;
 
 mapGoto = 0;
+
+switch (room)
+    {
+    case (startMap):
+    direction = 90-20;
+        break;
+    case (dungeonMap):
+    direction = 270;
+        break;
+    }
 </string>
           </argument>
         </arguments>
       </action>
     </event>
     <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>212</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_end_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>startPrison</sound>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>212</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_end_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>startDungeon</sound>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -308,7 +334,7 @@ switch (currentItem)
             <kind>1</kind>
             <string>///Movement
 
-var movSpeed = 1.5;
+var movSpeed = 1.25;
 
 global.playX = x;
 global.playY = y;
@@ -365,12 +391,12 @@ var horzMovX, horzMovY;
 horzMovX = lengthdir_x(horz*movSpeed,direction-90);
 horzMovY = lengthdir_y(horz*movSpeed,direction-90);
 
-if(!instance_place(x+vertMovX+horzMovX,y, wallCollide))
+if(!instance_place(x+vertMovX+horzMovX,y, wallCollide) &amp;&amp; !instance_place(x+vertMovX+horzMovX,y, wallInvis))
 {
 x+=vertMovX+horzMovX;
 } else { x = xprevious };
 
-if(!instance_place(x,y+vertMovY+horzMovY, wallCollide))
+if(!instance_place(x,y+vertMovY+horzMovY, wallCollide) &amp;&amp; !instance_place(x,y+vertMovY+horzMovY, wallInvis))
 {
 y+=vertMovY+horzMovY;
 } else { y = yprevious };
@@ -433,26 +459,6 @@ switch (room)
           <argument>
             <kind>3</kind>
             <string>0</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>212</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_end_sound</functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>6</kind>
-            <sound>startPrison</sound>
           </argument>
         </arguments>
       </action>
@@ -535,26 +541,6 @@ switch (room)
           <argument>
             <kind>3</kind>
             <string>0</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>212</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_end_sound</functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>6</kind>
-            <sound>startPrison</sound>
           </argument>
         </arguments>
       </action>
@@ -1020,7 +1006,51 @@ textureF = sprite_get_texture(tiles_Floor,1);
 
 d3d_draw_floor(x,y,15.99,x+16,y+16,15.99,textureF,1,1);
 
-draw_set_color($70a8d9);
+draw_set_color($518ddb);
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(x+8,y+8,0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+d3d_set_culling(1);
+
+draw_set_color(c_white);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>ladderUpObject</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw ladderUpObject
+d3d_set_culling(0);
+
+draw_set_color(global.floorColor);
+
+texture = sprite_get_texture(tiles_Sprites,12);
+textureF = sprite_get_texture(tiles_Floor,1);
+
+d3d_draw_floor(x,y,0.01,x+16,y+16,0.01,textureF,1,1);
+
+draw_set_color($518ddb);
 
 d3d_transform_set_identity();
 
@@ -1079,50 +1109,6 @@ d3d_transform_set_identity();
 }
 
 d3d_set_culling(1);
-draw_set_color(c_white);
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>ladderUpObject</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Draw ladderUpObject
-d3d_set_culling(0);
-
-draw_set_color(global.floorColor);
-
-texture = sprite_get_texture(tiles_Sprites,12);
-textureF = sprite_get_texture(tiles_Floor,1);
-
-d3d_draw_floor(x,y,0.01,x+16,y+16,0.01,textureF,1,1);
-
-draw_set_color($70a8d9);
-
-d3d_transform_set_identity();
-
-d3d_transform_set_rotation_z(playerObject.direction);
-d3d_transform_add_translation(x+8,y+8,0);
-
-d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
-
-d3d_transform_set_identity();
-
-d3d_set_culling(1);
-
 draw_set_color(c_white);
 </string>
           </argument>

@@ -6,6 +6,7 @@
   <NewExtensions/>
   <sounds name="sound">
     <sound>sound\startPrison</sound>
+    <sound>sound\startDungeon</sound>
     <sound>sound\crumble</sound>
     <sound>sound\ladder</sound>
     <sound>sound\cut</sound>
@@ -40,6 +41,7 @@
   <objects name="objects">
     <object>objects\startLevelCreate</object>
     <object>objects\wallMain</object>
+    <object>objects\wallInvis</object>
     <object>objects\floorHole_ForBalls</object>
     <object>objects\wallBall</object>
     <object>objects\wallBreakable</object>

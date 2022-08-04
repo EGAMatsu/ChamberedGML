@@ -58,11 +58,11 @@ y+=lengthdir_x(speed,direction);
 if (!instance_place(x+lengthdir_x(speed,direction),y,wallCollide))
 {
 x+=lengthdir_x(speed,direction)
-} else { speed = -speed; x = xprevious; }
+} else { x = xprevious; }
 if (!instance_place(x,y+lengthdir_y(speed,direction),wallCollide))
 {
 y+=lengthdir_y(speed,direction)
-} else { speed = -speed; y = yprevious; }
+} else { y = yprevious; }
 
 currFrame += speed*0.15;
 
