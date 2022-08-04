@@ -4,11 +4,19 @@ mapName = argument0;
 draw_set_halign(fa_center);
 draw_set_valign(fa_center);
 
-langToForce = "fr";
+langToForce = "ja";
 
-switch (os_get_language())
-//switch (langToForce)
+//switch (os_get_language())
+switch (langToForce)
 {
+    case "ja":
+    
+    draw_set_color($333333);
+    draw_text(160/2,91/2+1,mapName+"へのさん入");
+    draw_set_color($ccffff);
+    draw_text(160/2,91/2,mapName+"へのさん入");
+    
+    break;
     case "es":
     
     draw_set_color($333333);

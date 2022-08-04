@@ -42,7 +42,10 @@ for (i = 0; i < w; i++) { // cycle through width of image
                 obj = wallMain;
                 break;
             case ($ffff00): //Breakable Wall
+            if (global.ObjectInteractableStatusX[i,global.currentRoom]==true || global.ObjectInteractableStatusY[j,global.currentRoom]==true)
+            {
                 obj = wallBreakable;
+            }
                 break;
             case ($9e009e): //Ladder Down
                 obj = ladderDownObject;
@@ -51,7 +54,13 @@ for (i = 0; i < w; i++) { // cycle through width of image
                 obj = ladderUpObject;
                 break;
             case ($4C4C4C): //Cell Door Shut
+            if (global.ObjectInteractableStatusX[i,global.currentRoom]==true || global.ObjectInteractableStatusY[j,global.currentRoom]==true)
+            {
                 obj = wallCellFront;
+            } else
+            {
+                obj = wallCellFront_Broken;
+            }
                 break;
             case ($023aff): //Torch
                 obj = torchObject;

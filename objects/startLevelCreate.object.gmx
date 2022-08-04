@@ -31,9 +31,15 @@ switch (room)
 {
     case(startMap):
     global.roomName = start;
+    global.currentRoom = 0;
         break;
     case(dungeonMap):
     global.roomName = dungeon; 
+    global.currentRoom = 1;
+        break;
+    default:
+    global.roomName = startTest; 
+    global.currentRoom = 64;
         break;
 }
 createmap(global.roomName);

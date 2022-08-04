@@ -247,7 +247,7 @@ switch (keyboard_key)
             <kind>1</kind>
             <string>///Item use
 
-var handHitRange = 32;
+var handHitRange = 16;
 
 switch (currentItem)
 {
@@ -257,8 +257,24 @@ switch (currentItem)
         var objHit = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallBreakable,1,playerObject));
         if (objHit)
             {
+            global.ObjectInteractableStatusX[objHit.x/16,global.currentRoom] = false;
+            global.ObjectInteractableStatusY[objHit.y/16,global.currentRoom] = false;
             instance_destroy(objHit);
             audio_play_sound(crumble,0,0);
+            }
+        }
+        break;
+    case 3:
+        if (keyboard_check_pressed(vk_space))
+        {
+        var objHit2 = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallCellFront,1,playerObject));
+        if (objHit2)
+            {
+            global.ObjectInteractableStatusX[objHit2.x/16,global.currentRoom] = false;
+            global.ObjectInteractableStatusY[objHit2.y/16,global.currentRoom] = false;
+            instance_create(objHit2.x,objHit2.y,wallCellFront_Broken);
+            instance_destroy(objHit2);
+            audio_play_sound(cut,0,0);
             }
         }
         break;
@@ -671,6 +687,9 @@ if (isLoading)
     case (1):
         draw_loading("Dungeons");
         break;
+    default:
+        draw_loading("MISSINGNO.");
+        break;
     }
 }
 //draw_surface(surf_UI,0,0);
@@ -840,6 +859,41 @@ draw_set_color($FFFFFF);
 d3d_set_culling(0);
 
 texture = sprite_get_texture(tiles_Sprites,0);
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(x+8,y+8,0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+d3d_set_culling(1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>wallCellFront_Broken</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw CellWall_Broken
+d3d_set_culling(0);
+
+texture = sprite_get_texture(tiles_Sprites,1);
 
 d3d_transform_set_identity();
 
