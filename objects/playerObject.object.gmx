@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>0</persistent>
-  <parentName>&lt;undefined&gt;</parentName>
+  <parentName>wallCollide</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -261,6 +261,13 @@ switch (currentItem)
             global.ObjectInteractableStatusY[objHit.y/16,global.currentRoom] = false;
             instance_destroy(objHit);
             audio_play_sound(crumble,0,0);
+            }
+        var objHit3 = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallBall,1,playerObject));
+        if (objHit3)
+            {
+            objHit3.speed += 1;
+            objHit3.direction = direction;
+            audio_play_sound(roll,0,0);
             }
         }
         break;
@@ -870,6 +877,45 @@ d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
 d3d_transform_set_identity();
 
 d3d_set_culling(1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>wallBall</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw Ball
+d3d_set_culling(0);
+
+draw_set_color($93a2ae);
+
+texture = sprite_get_texture(tiles_Sprites,9);
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(x,y,0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+d3d_set_culling(1);
+
+draw_set_color(c_white);
 </string>
           </argument>
         </arguments>

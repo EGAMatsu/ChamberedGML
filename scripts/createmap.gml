@@ -65,6 +65,9 @@ for (i = 0; i < w; i++) { // cycle through width of image
             case ($023aff): //Torch
                 obj = torchObject;
                 break;
+            case ($0055aa): //Balls
+                obj = wallBall;
+                break;
             case ($00ffff): //Player
                 obj = playerObject;
                 break;

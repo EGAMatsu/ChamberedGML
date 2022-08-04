@@ -9,6 +9,7 @@
     <sound>sound\crumble</sound>
     <sound>sound\ladder</sound>
     <sound>sound\cut</sound>
+    <sound>sound\roll</sound>
   </sounds>
   <sprites name="sprites">
     <sprite>sprites\start</sprite>
@@ -38,6 +39,7 @@
   <objects name="objects">
     <object>objects\startLevelCreate</object>
     <object>objects\wallMain</object>
+    <object>objects\wallBall</object>
     <object>objects\wallBreakable</object>
     <object>objects\wallCellFront</object>
     <object>objects\wallCellFront_Broken</object>

@@ -6,8 +6,8 @@ draw_set_valign(fa_center);
 
 langToForce = "ja";
 
-//switch (os_get_language())
-switch (langToForce)
+switch (os_get_language())
+//switch (langToForce)
 {
     case "ja":
     
