@@ -3,6 +3,16 @@ var img, w, h, cell_w, cell_h, surf, i, j, col, obj; // init vars
 
 //https://chrisanselmo.com/gmcolor/
 
+d3d_end();
+d3d_set_culling(0);
+d3d_set_fog(0, c_black, -8, 90);
+
+d3d_light_enable(0, false);
+d3d_light_enable(1, false);
+
+draw_set_alpha_test(true);
+draw_set_alpha_test_ref_value(128);
+
 var playColor;
 playColor = make_colour_hsv(40,240,120);
 

@@ -128,6 +128,7 @@ surf_UI = surface_create(160,120);
 currentItem = 0;
 
 global.wallColor = $FFFFFF
+global.floorColor = $FFFFFF
 
 headMode = 0;
 
@@ -367,14 +368,16 @@ y+=vertMovY+horzMovY;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Set wall color
+            <string>///Set wall and floor color
 switch (room)
 {
     case (startMap):
         global.wallColor = $E1CCB1;
+        global.floorColor = $FFFFFF;
         break;
     case (dungeonMap):
         global.wallColor = $5448c6;
+        global.floorColor = $51488d;
         break;
 }
 </string>
@@ -604,6 +607,9 @@ d3d_start();
           <argument>
             <kind>1</kind>
             <string>///Set projection
+
+d3d_start();
+
 var bob = ((abs(sin(bobCount)+1)-1)/2) * bobMult;
 
 var height = 6;
@@ -618,6 +624,34 @@ d3d_light_enable(1, true);
 
 draw_set_alpha_test(true);
 draw_set_alpha_test_ref_value(128);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>wallMain</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw Flooring
+draw_set_color(global.floorColor);
+texture = sprite_get_texture(tiles_Floor,0);
+d3d_set_culling(0);
+d3d_draw_floor(0,0,0,room_width,room_height,0,texture,64,64);
+d3d_draw_floor(0,0,16,room_width,room_height,16,texture,64,64);
+d3d_set_culling(1);
+draw_set_color($FFFFFF);
 </string>
           </argument>
         </arguments>
@@ -895,33 +929,6 @@ d3d_set_culling(1);
 d3d_set_fog(1, c_black, -8, 90);
 
 draw_set_color($FFFFFF);
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>wallMain</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Draw Flooring
-
-texture = sprite_get_texture(tiles_Floor,0);
-d3d_set_culling(0);
-d3d_draw_floor(0,0,0,room_width,room_height,0,texture,64,64);
-d3d_draw_floor(0,0,16,room_width,room_height,16,texture,64,64);
-d3d_set_culling(1);
 </string>
           </argument>
         </arguments>
