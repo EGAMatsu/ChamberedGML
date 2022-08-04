@@ -68,6 +68,9 @@ for (i = 0; i < w; i++) { // cycle through width of image
             case ($0055aa): //Balls
                 obj = wallBall;
                 break;
+            case ($009300): //Hole for balls
+                obj = floorHole_ForBalls;
+                break;
             case ($00ffff): //Player
                 obj = playerObject;
                 break;
