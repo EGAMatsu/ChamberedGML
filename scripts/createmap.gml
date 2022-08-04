@@ -1,6 +1,6 @@
 ///createmap(image);
 var img, w, h, cell_w, cell_h, surf, i, j, col, obj; // init vars
-
+global.mapIsGen = false;
 //https://chrisanselmo.com/gmcolor/
 
 d3d_end();
@@ -71,3 +71,5 @@ for (i = 0; i < w; i++) { // cycle through width of image
 }
 
 surface_free(surf); // free the surface from memory
+
+global.mapIsGen = true;

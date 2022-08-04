@@ -607,8 +607,14 @@ d3d_start();
           <argument>
             <kind>1</kind>
             <string>///Set projection
-
+if (global.mapIsGen == true)
+{
 d3d_start();
+d3d_set_fog(1, c_black, -8, 90);
+
+d3d_light_enable(0, true);
+d3d_light_enable(1, true);
+}
 
 var bob = ((abs(sin(bobCount)+1)-1)/2) * bobMult;
 
@@ -617,13 +623,10 @@ var height = 6;
 var res = 160/91
 
 d3d_set_projection_ext(x,y,height+bob,x+lengthdir_x(9999,direction),y+lengthdir_y(9999,direction),height+bob,0,0,-1,70,res,0.1,256);
-d3d_set_fog(1, c_black, -8, 90);
-
-d3d_light_enable(0, true);
-d3d_light_enable(1, true);
 
 draw_set_alpha_test(true);
 draw_set_alpha_test_ref_value(128);
+
 </string>
           </argument>
         </arguments>
@@ -805,6 +808,8 @@ draw_set_color(c_white);
             <string>///Draw ladderDownObject
 d3d_set_culling(0);
 
+draw_set_color(global.floorColor);
+
 texture = sprite_get_texture(tiles_Sprites,11);
 textureF = sprite_get_texture(tiles_Floor,1);
 
@@ -847,6 +852,8 @@ draw_set_color(c_white);
             <string>///Draw ladderUpObject
 d3d_set_culling(0);
 
+draw_set_color(global.floorColor);
+
 texture = sprite_get_texture(tiles_Sprites,12);
 textureF = sprite_get_texture(tiles_Floor,1);
 
@@ -887,6 +894,9 @@ draw_set_color(c_white);
           <argument>
             <kind>1</kind>
             <string>///Draw torchObject
+
+if (!global.mapIsGen)
+{
 
 draw_set_color($00FFFF);
 
@@ -929,6 +939,8 @@ d3d_set_culling(1);
 d3d_set_fog(1, c_black, -8, 90);
 
 draw_set_color($FFFFFF);
+
+}
 </string>
           </argument>
         </arguments>
