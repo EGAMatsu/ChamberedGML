@@ -89,6 +89,7 @@ global.ObjectInteractableStatusY[k,i] = true;
             <string>///Set player items
 global.playerKeys = 0;
 global.playerCups = 0;
+global.gunAmmo = 0;
 health = 20;
 
 global.hasPowerGlove = false;

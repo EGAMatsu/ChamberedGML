@@ -8,6 +8,7 @@
     <sound>sound\startPrison</sound>
     <sound>sound\startDungeon</sound>
     <sound>sound\startOverworld</sound>
+    <sound>sound\startIce</sound>
     <sound>sound\crumble</sound>
     <sound>sound\ladder</sound>
     <sound>sound\cut</sound>
@@ -15,11 +16,14 @@
     <sound>sound\click</sound>
     <sound>sound\treasure</sound>
     <sound>sound\thud</sound>
+    <sound>sound\pickup</sound>
+    <sound>sound\slide</sound>
   </sounds>
   <sprites name="sprites">
     <sprite>sprites\start</sprite>
     <sprite>sprites\dungeon</sprite>
     <sprite>sprites\overworld</sprite>
+    <sprite>sprites\ice</sprite>
     <sprite>sprites\startTest</sprite>
     <sprite>sprites\wallNorm</sprite>
     <sprite>sprites\playerBox</sprite>
@@ -57,6 +61,7 @@
     <object>objects\wallBreakable</object>
     <object>objects\wallCellFront</object>
     <object>objects\wallCellFront_Broken</object>
+    <object>objects\itemTrophy</object>
     <object>objects\ladderDownObject</object>
     <object>objects\ladderUpObject</object>
     <object>objects\torchObject</object>
@@ -71,6 +76,7 @@
     <room>rooms\startMap</room>
     <room>rooms\dungeonMap</room>
     <room>rooms\overworldMap</room>
+    <room>rooms\iceMap</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

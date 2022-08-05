@@ -43,34 +43,50 @@ for (i = 0; i < w; i++) { // cycle through width of image
             case ($ffffff): //Main Wall
                 obj = wallMain;
                 break;
+                
             case ($64ffff): //Chest
                 obj = chestObject;
                 break;
+                
             case ($9bff93): //Foliage Wall
                 obj = wallFoliage;
                 break;
+                
             case ($ff0000): //Water
                 obj = floorWater;
                 break;
+                
             case ($003a65): //WoodenFloor
                 obj = floorWood;
                 break;
+                
             case ($603f3f): //Ice!
                 obj = floorIce;
                 break;
+                
             case ($ffff00): //Breakable Wall
             if (global.ObjectInteractableStatusX[i,global.currentRoom]==true || global.ObjectInteractableStatusY[j,global.currentRoom]==true)
             {
                 obj = wallBreakable;
             }
                 break;
+                
+            case ($4dc1c1): //Trophy
+            if (global.ObjectInteractableStatusX[i,global.currentRoom]==true || global.ObjectInteractableStatusY[j,global.currentRoom]==true)
+            {
+                obj = itemTrophy;
+            }
+                break;
+                
             case ($9e009e): //Ladder Down
                 obj = ladderDownObject;
                 ladderNumb++;
                 break;
+                
             case ($ff66ff): //Ladder Up
                 obj = ladderUpObject;
                 break;
+                
             case ($4C4C4C): //Cell Door Shut
             if (global.ObjectInteractableStatusX[i,global.currentRoom]==true || global.ObjectInteractableStatusY[j,global.currentRoom]==true)
             {
@@ -80,18 +96,23 @@ for (i = 0; i < w; i++) { // cycle through width of image
                 obj = wallCellFront_Broken;
             }
                 break;
+                
             case ($023aff): //Torch
                 obj = torchObject;
                 break;
+                
             case ($0055aa): //Balls
                 obj = wallBall;
                 break;
+                
             case ($009300): //Hole for balls
                 obj = floorHole_ForBalls;
                 break;
+                
             case ($00ffff): //Player
                 obj = playerObject;
                 break;
+                
             case (0):
                 break;
         }

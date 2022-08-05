@@ -99,6 +99,10 @@ bobCount = 0;
 d3d_start();
 d3d_set_culling(1);
 
+hasSlid = 0;
+
+playerCanUse = true;
+
 dirLook = direction;
 
 flashItemGetMsg = false;
@@ -138,7 +142,34 @@ switch (room)
     case (overworldMap):
     direction = 270;
         break;
+    case (iceMap):
+    direction = 90;
+        break;
     }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Permit user to use items
+playerCanUse = true;
 </string>
           </argument>
         </arguments>
@@ -231,6 +262,26 @@ userCanExitMsg = true;
       </action>
       <action>
         <libid>1</libid>
+        <id>212</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_end_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>startIce</sound>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
         <id>603</id>
         <kind>7</kind>
         <userelative>0</userelative>
@@ -256,6 +307,9 @@ switch (mapGoto)
         break;
     case(2):
     room_goto(overworldMap);
+        break;
+    case(3):
+    room_goto(iceMap);
         break;
 }
 </string>
@@ -370,7 +424,7 @@ switch (currentItem)
             }
         }
         break;
-    case 3: /* Pliers */
+    case 2: /* Pliers */
         if (keyboard_check_pressed(vk_space))
         {
         var objHit2 = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallCellFront,1,playerObject));
@@ -393,7 +447,7 @@ if (keyboard_check_pressed(vk_space))
     {
     if (!chestHit.isOpen) /* Only open if never opened */
         {
-        
+        playerCanUse = false;
         if (chestHit.idoC == 3 &amp;&amp; room == dungeonMap)
         {
         global.hasPowerGlove = true;
@@ -401,9 +455,16 @@ if (keyboard_check_pressed(vk_space))
         alarm_set(1,room_speed*2.5);
         }
         
-        if (chestHit.idoC == 1 &amp;&amp; room == startMap)
+        else if (chestHit.idoC == 1 &amp;&amp; room == startMap)
         {
         global.hasGun = true;
+        global.gunAmmo += 20;
+        flashItemGetMsg = true;
+        alarm_set(1,room_speed*2.5);
+        }
+        
+        else {
+        global.hasPowerGlove = true;
         flashItemGetMsg = true;
         alarm_set(1,room_speed*2.5);
         }
@@ -423,6 +484,7 @@ if (keyboard_check_pressed(vk_space))
         {
         flashItemGetMsg = false;
         userCanExitMsg = false;
+        alarm_set(2,5);
         }
     }
 }
@@ -502,7 +564,14 @@ switch (headMode)
 
 if (instance_position(x,y,floorIce))
 {
+if (!isOnIce)
+{
 isOnIce = true;
+    if (!audio_is_playing(slide))
+    {
+    audio_play_sound(slide,0,0);
+    }
+}
 } else { isOnIce = false; }
 
 if (!flashItemGetMsg)
@@ -518,7 +587,7 @@ dirVelo = clamp(dirVelo, -5, 5);
 direction += dirVelo;
 
 /* Movement */
-if (!flashItemGetMsg &amp;&amp; !isOnIce)
+if (!flashItemGetMsg &amp;&amp; (!isOnIce || currentItem == 3))
 {
 dirLook = direction;
 vert = keyboard_check(ord("W"))-keyboard_check(ord("S"));
@@ -531,16 +600,20 @@ vert = 0;
 horz = 0;
 }
 
+if (currentItem != 3) /* toDo, make skates */
+{
 if (isOnIce) /* Spend 1.5 hours on ice physics. */
 {
 
 if( (!(instance_place(x+vertMovX+horzMovX,y, wallCollide))) &amp;&amp; !((instance_place(x,y+vertMovY+horzMovY, wallCollide))) )
 {
 //do nothing?
+hasSlid = true;
 } else
 {
 vert = 0;
 horz = 0;
+hasSlid = false;
 }
 
 if !(vert != 0 || horz != 0)
@@ -549,8 +622,15 @@ vert = keyboard_check(ord("W"))-keyboard_check(ord("S"));
 horz = keyboard_check(ord("A"))-keyboard_check(ord("D"));
 dirLook = direction;
 
-
+if (vert != 0 || horz != 0)
+{
+    if (!audio_is_playing(slide))
+    {
+    audio_play_sound(slide,0,0);
+    }
 }
+
+} else { isOnIce = false; }
 
 dirLook = round(dirLook/90)*90;
 
@@ -558,6 +638,8 @@ if (vert != 0)
 {
 horz = 0;
 } else { vert = 0; }
+
+}
 
 }
 
@@ -611,6 +693,10 @@ switch (room)
         break;
     case (overworldMap):
         global.floorColor = $51814e;
+        break;
+    case (iceMap):
+        global.wallColor = $7e7233;
+        global.floorColor = $dedbb7;
         break;
 }
 </string>
@@ -756,6 +842,12 @@ switch (room)
     case(overworldMap):
         switch (other.idoL)
         {
+        case 3:
+            mapGoto = 3;
+            global.doesForceLocation = true;
+            global.forceX = 43;
+            global.forceY = 40;
+            break;
         case 2:
             mapGoto = 0;
             global.doesForceLocation = true;
@@ -765,8 +857,8 @@ switch (room)
         default:
             mapGoto = 1;
             global.doesForceLocation = true;
-            global.forceX = 42;
-            global.forceY = 34;
+            global.forceX = 41;
+            global.forceY = 33;
             break;
     }
         break;
@@ -884,7 +976,7 @@ if (global.hasPowerGlove)
 {
     if (keyboard_check_pressed(vk_space))
     {
-    if (!flashItemGetMsg)
+    if (!flashItemGetMsg &amp;&amp; playerCanUse)
     {
     hasFired = true;
     }
@@ -903,16 +995,15 @@ if (global.hasPowerGlove)
     currFrame = 16;
     } else { currFrame = 8; }
         draw_sprite_ext(tiles_items,currFrame,(160/2)+(160/16)-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$63c3ff,1);
-}
-
+    }
     break;
-case (2):
-
+    
+case (1):
 if (global.hasGun)
 {
     if (keyboard_check_pressed(vk_space))
     {
-    if (!flashItemGetMsg)
+    if (!flashItemGetMsg &amp;&amp; playerCanUse)
     {
     hasFired = true;
     }
@@ -931,10 +1022,8 @@ if (global.hasGun)
     currFrame = 17;
     } else { currFrame = 9; }
         draw_sprite_ext(tiles_items,currFrame,(160/2)+(160/16)-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$ffffff,1);
-}
-
+    }
     break;
-
 }
 
 }
@@ -967,7 +1056,12 @@ draw_sprite_ext(tiles_items,0,30,93,1,1,0,$63c3ff,1);
 
 if (global.hasGun)
 {
-draw_sprite_ext(tiles_items,1,30+(16*2),93,1,1,0,$ffffff,1);
+draw_sprite_ext(tiles_items,1,30+(16*1),93,1,1,0,$ffffff,1);
+
+//CurrentAmmo
+draw_set_halign(fa_right);
+draw_text((31+16)+(16*1),102,global.gunAmmo);
+draw_set_halign(fa_left);
 }
 
 draw_text(10,94,global.playerKeys);
@@ -986,9 +1080,10 @@ display_set_gui_size(160,120);
 */
 }
 
-/*
+if (keyboard_check(vk_f3))
+{
 var tempStr = "Lacking downwards ladders"
-w
+
 if (instance_exists(ladderDownObject))
 {
 tempStr = "id:"+string(instance_nearest(x,y,ladderDownObject).idoL);
@@ -1002,7 +1097,7 @@ tempStr2 = "#id:"+string(instance_nearest(x,y,chestObject).idoC);
 }
 
 draw_text(0,0,"Does force loc?#" + string(global.doesForceLocation) + "#" + tempStr + tempStr2);
-*/
+}
 
 if (flashItemGetMsg)
 {
@@ -1068,7 +1163,7 @@ d3d_start();
 if (global.mapIsGen == true)
 {
 d3d_start();
-d3d_set_fog(1, c_black, -8, 90);
+d3d_set_fog(1, c_black, 8, 90);
 
 d3d_light_enable(0, true);
 d3d_light_enable(1, true);
@@ -1246,6 +1341,45 @@ d3d_transform_add_translation(x+8,y+8,0);
 d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
 
 d3d_transform_set_identity();
+
+d3d_set_culling(1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>itemTrophy</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw TrophyItem
+d3d_set_culling(0);
+
+draw_set_color($7effff);
+
+texture = sprite_get_texture(tiles_Sprites,18);
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(x+8,y+8,0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+draw_set_color($ffffff);
 
 d3d_set_culling(1);
 </string>
@@ -1701,7 +1835,7 @@ d3d_transform_set_identity();
 
 d3d_set_culling(1);
 
-d3d_set_fog(1, c_black, -8, 90);
+d3d_set_fog(1, c_black, 8, 90);
 
 draw_set_color($FFFFFF);
 
