@@ -102,6 +102,9 @@ d3d_set_culling(1);
 flashItemGetMsg = false;
 userCanExitMsg = false;
 
+timerPunch = 0;
+hasFired = false;
+
 surf_UI = surface_create(160,120);
 
 currentItem = 0;
@@ -381,9 +384,16 @@ if (keyboard_check_pressed(vk_space))
     if (!chestHit.isOpen) /* Only open if never opened */
         {
         
-        if (chestHit.idoC &amp;&amp; room == dungeonMap)
+        if (chestHit.idoC == 3 &amp;&amp; room == dungeonMap)
         {
         global.hasPowerGlove = true;
+        flashItemGetMsg = true;
+        alarm_set(1,room_speed*2.5);
+        }
+        
+        if (chestHit.idoC == 1 &amp;&amp; room == startMap)
+        {
+        global.hasGun = true;
         flashItemGetMsg = true;
         alarm_set(1,room_speed*2.5);
         }
@@ -794,10 +804,75 @@ draw_set_color(c_black);
 draw_rectangle(0,0,320,320,0);
 draw_set_color(c_white);
 
+var bob = ((abs(sin(bobCount/1.5)))/2) * bobMult;
+var currFrame = 8;
+
 draw_set_color(c_white);
 if (!isLoading)
 {
 draw_surface_stretched(application_surface,0,0,160,91);
+
+switch (currentItem)
+{
+case (0):
+
+if (global.hasPowerGlove)
+{
+    if (keyboard_check_pressed(vk_space))
+    {
+    if (!flashItemGetMsg)
+    {
+    hasFired = true;
+    }
+    }
+    if (hasFired)
+    {
+    timerPunch += 0.5;
+    }
+    if (timerPunch == 5)
+    {
+    timerPunch = 0;
+    hasFired = false;
+    }
+    if (timerPunch &gt;= 1)
+    {
+    currFrame = 16;
+    } else { currFrame = 8; }
+        draw_sprite_ext(tiles_items,currFrame,(160/2)+(160/16)-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$63c3ff,1);
+}
+
+    break;
+case (2):
+
+if (global.hasGun)
+{
+    if (keyboard_check_pressed(vk_space))
+    {
+    if (!flashItemGetMsg)
+    {
+    hasFired = true;
+    }
+    }
+    if (hasFired)
+    {
+    timerPunch += 1;
+    }
+    if (timerPunch == 5)
+    {
+    timerPunch = 0;
+    hasFired = false;
+    }
+    if (timerPunch &gt;= 1)
+    {
+    currFrame = 17;
+    } else { currFrame = 9; }
+        draw_sprite_ext(tiles_items,currFrame,(160/2)+(160/16)-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$ffffff,1);
+}
+
+    break;
+
+}
+
 }
 if (isLoading)
 {
@@ -823,19 +898,25 @@ if (global.hasPowerGlove)
 draw_sprite_ext(tiles_items,0,30,93,1,1,0,$63c3ff,1);
 }
 
+if (global.hasGun)
+{
+draw_sprite_ext(tiles_items,1,30+(16*2),93,1,1,0,$ffffff,1);
+}
+
 draw_text(10,94,global.playerKeys);
 draw_text(10,102,global.playerCups);
 draw_text(10,110,health);
 
 if (keyboard_check(ord("M")))
 {
+/*
 display_set_gui_size(320,240);
 
 draw_sprite(global.roomName,0,320-64,0);
 draw_sprite(playSprite_mini,0,round(((x)/16) + (320-64)),round((y)/16));
 
 display_set_gui_size(160,120);
-
+*/
 }
 
 /*
