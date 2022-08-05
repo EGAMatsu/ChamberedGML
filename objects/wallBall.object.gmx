@@ -29,6 +29,11 @@
 y+=8;
 
 currFrame = 0;
+
+if (room = startMap &amp;&amp; global.prisonBallsRemoved)
+{
+instance_destroy();
+}
 </string>
           </argument>
         </arguments>

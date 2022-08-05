@@ -7,15 +7,18 @@
   <sounds name="sound">
     <sound>sound\startPrison</sound>
     <sound>sound\startDungeon</sound>
+    <sound>sound\startOverworld</sound>
     <sound>sound\crumble</sound>
     <sound>sound\ladder</sound>
     <sound>sound\cut</sound>
     <sound>sound\roll</sound>
     <sound>sound\click</sound>
+    <sound>sound\treasure</sound>
   </sounds>
   <sprites name="sprites">
     <sprite>sprites\start</sprite>
     <sprite>sprites\dungeon</sprite>
+    <sprite>sprites\overworld</sprite>
     <sprite>sprites\startTest</sprite>
     <sprite>sprites\wallNorm</sprite>
     <sprite>sprites\playerBox</sprite>
@@ -23,6 +26,7 @@
     <sprite>sprites\tiles_Wall</sprite>
     <sprite>sprites\tiles_Floor</sprite>
     <sprite>sprites\tiles_Sprites</sprite>
+    <sprite>sprites\tiles_items</sprite>
     <sprite>sprites\uiBar</sprite>
     <sprite>sprites\uiBar_Selected</sprite>
     <sprite>sprites\font</sprite>
@@ -41,6 +45,8 @@
   <objects name="objects">
     <object>objects\startLevelCreate</object>
     <object>objects\wallMain</object>
+    <object>objects\floorWater</object>
+    <object>objects\wallFoliage</object>
     <object>objects\wallInvis</object>
     <object>objects\floorHole_ForBalls</object>
     <object>objects\wallBall</object>
@@ -50,6 +56,7 @@
     <object>objects\ladderDownObject</object>
     <object>objects\ladderUpObject</object>
     <object>objects\torchObject</object>
+    <object>objects\chestObject</object>
     <object>objects\playerObject</object>
     <object>objects\wallCollide</object>
     <object>objects\startGameGlobals</object>
@@ -59,6 +66,7 @@
     <room>rooms\startGame</room>
     <room>rooms\startMap</room>
     <room>rooms\dungeonMap</room>
+    <room>rooms\overworldMap</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

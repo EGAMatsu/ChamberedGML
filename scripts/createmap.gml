@@ -3,6 +3,8 @@ var img, w, h, cell_w, cell_h, surf, i, j, col, obj; // init vars
 global.mapIsGen = false;
 //https://chrisanselmo.com/gmcolor/
 
+var ladderNumb = -1;
+
 d3d_end();
 d3d_set_culling(0);
 d3d_set_fog(0, c_black, -8, 90);
@@ -41,6 +43,15 @@ for (i = 0; i < w; i++) { // cycle through width of image
             case ($ffffff): //Main Wall
                 obj = wallMain;
                 break;
+            case ($64ffff): //Chest
+                obj = chestObject;
+                break;
+            case ($9bff93): //Foliage Wall
+                obj = wallFoliage;
+                break;
+            case ($ff0000): //Water
+                obj = floorWater;
+                break;
             case ($ffff00): //Breakable Wall
             if (global.ObjectInteractableStatusX[i,global.currentRoom]==true || global.ObjectInteractableStatusY[j,global.currentRoom]==true)
             {
@@ -49,6 +60,7 @@ for (i = 0; i < w; i++) { // cycle through width of image
                 break;
             case ($9e009e): //Ladder Down
                 obj = ladderDownObject;
+                ladderNumb++;
                 break;
             case ($ff66ff): //Ladder Up
                 obj = ladderUpObject;
@@ -80,7 +92,11 @@ for (i = 0; i < w; i++) { // cycle through width of image
 
         // if there is a color match, create the associated object at the given coordinates (px * grid)
         if (obj != noone) {
-            instance_create(i * cell_w, j * cell_h, obj);
+            var inst = instance_create(i * cell_w, j * cell_h, obj);
+            if (object_get_name(inst) == "ladderDownObject")
+            {
+            inst.idoL = ladderNumb;
+            }
         }
     }
 }

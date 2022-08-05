@@ -99,6 +99,9 @@ bobCount = 0;
 d3d_start();
 d3d_set_culling(1);
 
+flashItemGetMsg = false;
+userCanExitMsg = false;
+
 surf_UI = surface_create(160,120);
 
 currentItem = 0;
@@ -123,6 +126,30 @@ switch (room)
     direction = 270;
         break;
     }
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Make it so user can exit out of message
+userCanExitMsg = true;
 </string>
           </argument>
         </arguments>
@@ -171,6 +198,26 @@ switch (room)
       </action>
       <action>
         <libid>1</libid>
+        <id>212</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_end_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>startOverworld</sound>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
         <id>603</id>
         <kind>7</kind>
         <userelative>0</userelative>
@@ -186,13 +233,16 @@ switch (room)
           <argument>
             <kind>1</kind>
             <string>///Goto map
-switch (room)
+switch (mapGoto)
 {
-    case(startMap):
+    case(1):
     room_goto(dungeonMap);
         break;
-    case(dungeonMap):
+    case(0):
     room_goto(startMap);
+        break;
+    case(2):
+    room_goto(overworldMap);
         break;
 }
 </string>
@@ -275,9 +325,16 @@ switch (keyboard_key)
 
 var handHitRange = 16;
 
+var chestHit = (collision_line_first(x,y,x+lengthdir_x(handHitRange/2,direction),y+lengthdir_y(handHitRange/2,direction),chestObject,1,playerObject));
+
+if (!flashItemGetMsg)
+{
+
+if (!chestHit &amp;&amp; chestHit != -1) /* If player is not looking at any chests, use normal items */
+{
 switch (currentItem)
 {
-    case 0:
+    case 0: /* POW Glove */
         if (keyboard_check_pressed(vk_space))
         {
         var objHit = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallBreakable,1,playerObject));
@@ -291,13 +348,16 @@ switch (currentItem)
         var objHit3 = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallBall,1,playerObject));
         if (objHit3)
             {
-            objHit3.speed += 1;
-            objHit3.direction = direction;
-            audio_play_sound(roll,0,0);
+            if (global.hasPowerGlove)
+                {
+                objHit3.speed += 1;
+                objHit3.direction = direction;
+                audio_play_sound(roll,0,0);
+                }
             }
         }
         break;
-    case 3:
+    case 3: /* Pliers */
         if (keyboard_check_pressed(vk_space))
         {
         var objHit2 = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallCellFront,1,playerObject));
@@ -311,6 +371,41 @@ switch (currentItem)
             }
         }
         break;
+}
+}
+
+if (chestHit &amp;&amp; chestHit != -1) /* Open a chest if looking at one */
+{
+if (keyboard_check_pressed(vk_space))
+    {
+    if (!chestHit.isOpen) /* Only open if never opened */
+        {
+        
+        if (chestHit.idoC &amp;&amp; room == dungeonMap)
+        {
+        global.hasPowerGlove = true;
+        flashItemGetMsg = true;
+        alarm_set(1,room_speed*2.5);
+        }
+        
+        chestHit.isOpen = true;
+        global.ObjectInteractableStatusX[(chestHit.x-8)/16,global.currentRoom] = false;
+        global.ObjectInteractableStatusY[(chestHit.y-8)/16,global.currentRoom] = false;
+        audio_play_sound(treasure,0,0);
+        }
+    }
+}
+
+} else 
+{
+    if (keyboard_check_pressed(vk_space))
+    {
+        if (userCanExitMsg)
+        {
+        flashItemGetMsg = false;
+        userCanExitMsg = false;
+        }
+    }
 }
 </string>
           </argument>
@@ -363,7 +458,11 @@ switch (headMode)
 
 /* Looking Around */
 
+if (!flashItemGetMsg)
+{
 dirVelo -= (keyboard_check(vk_left) - keyboard_check(vk_right)) * 2;
+}
+
 if (!keyboard_check(vk_left) &amp;&amp; !keyboard_check(vk_right))
 {
 dirVelo = lerp(dirVelo,0,0.5);
@@ -372,9 +471,14 @@ dirVelo = clamp(dirVelo, -5, 5);
 direction += dirVelo;
 
 /* Movement */
-
-var vert = keyboard_check(ord("W"))-keyboard_check(ord("S"));
-var horz = keyboard_check(ord("A"))-keyboard_check(ord("D"));
+var vert,horz;
+vert = 0;
+horz = 0;
+if (!flashItemGetMsg)
+{
+vert = keyboard_check(ord("W"))-keyboard_check(ord("S"));
+horz = keyboard_check(ord("A"))-keyboard_check(ord("D"));
+}
 
 if (vert != 0 || horz != 0)
 {
@@ -391,12 +495,12 @@ var horzMovX, horzMovY;
 horzMovX = lengthdir_x(horz*movSpeed,direction-90);
 horzMovY = lengthdir_y(horz*movSpeed,direction-90);
 
-if(!instance_place(x+vertMovX+horzMovX,y, wallCollide) &amp;&amp; !instance_place(x+vertMovX+horzMovX,y, wallInvis))
+if((!instance_place(x+vertMovX+horzMovX,y, wallCollide) &amp;&amp; !instance_place(x+vertMovX+horzMovX,y, wallInvis)) || keyboard_check(ord("Q")))
 {
 x+=vertMovX+horzMovX;
 } else { x = xprevious };
 
-if(!instance_place(x,y+vertMovY+horzMovY, wallCollide) &amp;&amp; !instance_place(x,y+vertMovY+horzMovY, wallInvis))
+if((!instance_place(x,y+vertMovY+horzMovY, wallCollide) &amp;&amp; !instance_place(x,y+vertMovY+horzMovY, wallInvis)) || keyboard_check(ord("Q")))
 {
 y+=vertMovY+horzMovY;
 } else { y = yprevious };
@@ -430,6 +534,9 @@ switch (room)
     case (dungeonMap):
         global.wallColor = $5448c6;
         global.floorColor = $51488d;
+        break;
+    case (overworldMap):
+        global.floorColor = $51814e;
         break;
 }
 </string>
@@ -485,6 +592,10 @@ switch (room)
 {
     case(startMap):
     mapGoto = 2;
+    global.doesForceLocation = true;
+    global.forceX = 37;
+    global.forceY = 19;
+    global.prisonBallsRemoved = true;
         break;
     case(dungeonMap):
     mapGoto = 0;
@@ -567,6 +678,23 @@ switch (room)
 {
     case(startMap):
     mapGoto = 1;
+        break;
+    case(overworldMap):
+        switch (other.idoL)
+        {
+        case 2:
+            mapGoto = 0;
+            global.doesForceLocation = true;
+            global.forceX = 36;
+            global.forceY = 31;
+            break;
+        default:
+            mapGoto = 1;
+            global.doesForceLocation = true;
+            global.forceX = 42;
+            global.forceY = 34;
+            break;
+    }
         break;
 }
 </string>
@@ -658,6 +786,7 @@ surface_reset_target();
           <argument>
             <kind>1</kind>
             <string>///Draw screen
+
 display_set_gui_size(160,120);
 surface_resize(application_surface,160,120);
 
@@ -689,6 +818,14 @@ if (isLoading)
 draw_sprite(uiBar,0,0,91);
 draw_sprite(uiBar_Selected,0,30+(currentItem*16),93);
 
+if (global.hasPowerGlove)
+{
+draw_sprite_ext(tiles_items,0,30,93,1,1,0,$63c3ff,1);
+}
+
+draw_text(10,94,global.playerKeys);
+draw_text(10,102,global.playerCups);
+draw_text(10,110,health);
 
 if (keyboard_check(ord("M")))
 {
@@ -698,7 +835,63 @@ draw_sprite(global.roomName,0,320-64,0);
 draw_sprite(playSprite_mini,0,round(((x)/16) + (320-64)),round((y)/16));
 
 display_set_gui_size(160,120);
+
 }
+
+/*
+var tempStr = "Lacking downwards ladders"
+
+if (instance_exists(ladderDownObject))
+{
+tempStr = "id:"+string(instance_nearest(x,y,ladderDownObject).idoL);
+}
+
+var tempStr2 = "#Lacking chests"
+
+if (instance_exists(chestObject))
+{
+tempStr2 = "#id:"+string(instance_nearest(x,y,chestObject).idoC);
+}
+
+draw_text(0,0,"Does force loc?#" + string(global.doesForceLocation) + "#" + tempStr + tempStr2);
+*/
+
+if (flashItemGetMsg)
+{
+
+draw_set_alpha_test(false);
+
+draw_set_alpha(0.5);
+draw_set_color(c_black);
+draw_rectangle(0,0,160,160,0);
+draw_set_alpha(1);
+draw_set_color(c_white);
+
+draw_set_alpha_test(true);
+
+draw_sprite_ext(tiles_items,0,56,8-3,3,3,0,$63c3ff,1);
+
+draw_set_halign(fa_center);
+
+draw_set_color($7effff);
+draw_text(160/2,50,"You found the Power Glove!");
+draw_set_color($9f9f9f);
+draw_text(160/2,60,"Smaaaash!");
+
+if (userCanExitMsg)
+{
+draw_set_color($7effff);
+draw_text(160/2-6,80,"-&gt; Continue");
+} else
+{
+draw_set_color($9f9f9f);
+draw_text(160/2,80,"Continue");
+}
+
+}
+
+draw_set_color(c_white);
+draw_set_halign(fa_left);
 
 d3d_start();
 </string>
@@ -766,10 +959,26 @@ draw_set_alpha_test_ref_value(128);
             <kind>1</kind>
             <string>///Draw Flooring
 draw_set_color(global.floorColor);
+
+switch (room)
+{
+default:
 texture = sprite_get_texture(tiles_Floor,0);
+break;
+case (overworldMap):
+texture = sprite_get_texture(tiles_Floor,24);
+break;
+}
+
 d3d_set_culling(0);
-d3d_draw_floor(0,0,0,room_width,room_height,0,texture,64,64);
+
 d3d_draw_floor(0,0,16,room_width,room_height,16,texture,64,64);
+
+if (room != overworldMap)
+{
+d3d_draw_floor(0,0,0,room_width,room_height,0,texture,64,64);
+}
+
 d3d_set_culling(1);
 draw_set_color($FFFFFF);
 </string>
@@ -796,6 +1005,34 @@ draw_set_color($FFFFFF);
 texture = sprite_get_texture(tiles_Wall,0);
 
 draw_set_color(global.wallColor);
+
+d3d_draw_shaded_box(x,y,0,x+16,y+16,16,texture,1,1);
+
+draw_set_color($FFFFFF);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>wallFoliage</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw WallFoliage
+texture = sprite_get_texture(tiles_Wall,8);
+
+draw_set_color($33ae2ad);
 
 d3d_draw_shaded_box(x,y,0,x+16,y+16,16,texture,1,1);
 
@@ -861,6 +1098,51 @@ d3d_transform_add_translation(x+8,y+8,0);
 d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
 
 d3d_transform_set_identity();
+
+d3d_set_culling(1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>chestObject</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw Chest
+d3d_set_culling(0);
+
+draw_set_color($00ffff);
+
+if (isOpen)
+{
+texture = sprite_get_texture(tiles_Sprites,17);
+} else
+{
+texture = sprite_get_texture(tiles_Sprites,16);
+}
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(x,y,0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+draw_set_color($FFFFFF);
 
 d3d_set_culling(1);
 </string>
@@ -990,6 +1272,38 @@ draw_set_color(c_white);
         <exetype>2</exetype>
         <functionname></functionname>
         <codestring></codestring>
+        <whoName>floorWater</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw floorWater
+d3d_set_culling(0);
+
+draw_set_color($f00000);
+
+textureF = sprite_get_texture(tiles_Floor,8 + round(currFrame));
+
+d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
+
+d3d_set_culling(1);
+
+draw_set_color(c_white);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
         <whoName>ladderDownObject</whoName>
         <relative>0</relative>
         <isnot>0</isnot>
@@ -1004,7 +1318,7 @@ draw_set_color(global.floorColor);
 texture = sprite_get_texture(tiles_Sprites,11);
 textureF = sprite_get_texture(tiles_Floor,1);
 
-d3d_draw_floor(x,y,15.99,x+16,y+16,15.99,textureF,1,1);
+d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
 
 draw_set_color($518ddb);
 
@@ -1132,7 +1446,7 @@ draw_set_color(c_white);
             <kind>1</kind>
             <string>///Draw torchObject
 
-if (!global.mapIsGen)
+if (global.mapIsGen)
 {
 
 draw_set_color($00FFFF);

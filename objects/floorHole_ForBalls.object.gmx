@@ -28,6 +28,11 @@
             <string>hasBall = false;
 
 invWall = instance_create(x,y,wallInvis);
+
+if (room = startMap &amp;&amp; global.prisonBallsRemoved)
+{
+hasBall = true;
+}
 </string>
           </argument>
         </arguments>

@@ -39,6 +39,11 @@ switch (room)
     global.currentRoom = 1;
     audio_play_sound(startDungeon,64,true);
         break;
+    case(overworldMap):
+    global.roomName = overworld; 
+    global.currentRoom = 1;
+    audio_play_sound(startOverworld,64,true);
+        break;
     default:
     global.roomName = startTest; 
     global.currentRoom = 64;
@@ -51,11 +56,19 @@ if (!instance_exists(playerObject))
 instance_create(global.playX, global.playY, playerObject);
 }
 
-if (!global.mapStart &amp;&amp; (global.playX != 0 &amp;&amp; global.playY != 0))
+if (!global.mapStart &amp;&amp; (global.playX != 0 &amp;&amp; global.playY != 0) &amp;&amp; !global.doesForceLocation)
 {
 playerObject.x = global.playX;
 playerObject.y = global.playY;
 }
+
+if (global.doesForceLocation)
+{
+playerObject.x = global.forceX * 16 - 8;
+playerObject.y = global.forceY * 16 - 8;
+}
+
+global.doesForceLocation = false;
 </string>
           </argument>
         </arguments>
