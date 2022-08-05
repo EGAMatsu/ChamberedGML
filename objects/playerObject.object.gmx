@@ -884,6 +884,9 @@ if (isLoading)
     case (1):
         draw_loading("Dungeons");
         break;
+    case (2):
+        draw_loading("Overworld");
+        break;
     default:
         draw_loading("MISSINGNO.");
         break;
@@ -921,7 +924,7 @@ display_set_gui_size(160,120);
 
 /*
 var tempStr = "Lacking downwards ladders"
-
+w
 if (instance_exists(ladderDownObject))
 {
 tempStr = "id:"+string(instance_nearest(x,y,ladderDownObject).idoL);
