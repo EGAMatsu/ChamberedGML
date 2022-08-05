@@ -7,5 +7,5 @@ Controls:<br />
 WASD is Movement.<br />
 Left and Right arrow keys make you look left and right.<br />
 Space interacts.<br />
-<br /><br />
+<br />
 This game does NOT require Java.
