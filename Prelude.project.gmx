@@ -14,6 +14,7 @@
     <sound>sound\roll</sound>
     <sound>sound\click</sound>
     <sound>sound\treasure</sound>
+    <sound>sound\thud</sound>
   </sounds>
   <sprites name="sprites">
     <sprite>sprites\start</sprite>
@@ -46,6 +47,9 @@
     <object>objects\startLevelCreate</object>
     <object>objects\wallMain</object>
     <object>objects\floorWater</object>
+    <object>objects\floorWood</object>
+    <object>objects\floorIce</object>
+    <object>objects\floorPlate</object>
     <object>objects\wallFoliage</object>
     <object>objects\wallInvis</object>
     <object>objects\floorHole_ForBalls</object>

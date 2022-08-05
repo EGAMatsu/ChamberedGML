@@ -99,15 +99,22 @@ bobCount = 0;
 d3d_start();
 d3d_set_culling(1);
 
+dirLook = direction;
+
 flashItemGetMsg = false;
 userCanExitMsg = false;
 
 timerPunch = 0;
 hasFired = false;
 
+isOnIce = false;
+
 surf_UI = surface_create(160,120);
 
 currentItem = 0;
+
+horz = 0;
+vert = 0;
 
 global.wallColor = $FFFFFF
 global.floorColor = $FFFFFF
@@ -126,6 +133,9 @@ switch (room)
     direction = 90-20;
         break;
     case (dungeonMap):
+    direction = 270;
+        break;
+    case (overworldMap):
     direction = 270;
         break;
     }
@@ -399,8 +409,7 @@ if (keyboard_check_pressed(vk_space))
         }
         
         chestHit.isOpen = true;
-        global.ObjectInteractableStatusX[(chestHit.x-8)/16,global.currentRoom] = false;
-        global.ObjectInteractableStatusY[(chestHit.y-8)/16,global.currentRoom] = false;
+        global.chestIsOpen[chestHit.idoC,global.currentRoom] = true;
         audio_play_sound(treasure,0,0);
         }
     }
@@ -415,6 +424,14 @@ if (keyboard_check_pressed(vk_space))
         flashItemGetMsg = false;
         userCanExitMsg = false;
         }
+    }
+}
+
+if (flashItemGetMsg) /* Face chest */
+{
+    if (instance_exists(chestHit))
+    {
+    direction = lerp(direction,point_direction(x,y,chestHit.x,chestHit.y),0.25);
     }
 }
 </string>
@@ -444,6 +461,21 @@ var movSpeed = 1.25;
 global.playX = x;
 global.playY = y;
 
+var vertMovX, vertMovY;
+var horzMovX, horzMovY;
+
+vertMovX = lengthdir_x(vert*movSpeed,dirLook);
+vertMovY = lengthdir_y(vert*movSpeed,dirLook);
+
+horzMovX = lengthdir_x(horz*movSpeed,dirLook-90);
+horzMovY = lengthdir_y(horz*movSpeed,dirLook-90);
+
+var xP, yP;
+
+xP = x; yP = y;
+
+var canMoveIce = false;
+
 /* Head Mode */
 
 /*if headMode &lt; 1
@@ -468,6 +500,11 @@ switch (headMode)
 
 /* Looking Around */
 
+if (instance_position(x,y,floorIce))
+{
+isOnIce = true;
+} else { isOnIce = false; }
+
 if (!flashItemGetMsg)
 {
 dirVelo -= (keyboard_check(vk_left) - keyboard_check(vk_right)) * 2;
@@ -481,13 +518,47 @@ dirVelo = clamp(dirVelo, -5, 5);
 direction += dirVelo;
 
 /* Movement */
-var vert,horz;
+if (!flashItemGetMsg &amp;&amp; !isOnIce)
+{
+dirLook = direction;
+vert = keyboard_check(ord("W"))-keyboard_check(ord("S"));
+horz = keyboard_check(ord("A"))-keyboard_check(ord("D"));
+}
+if (flashItemGetMsg)
+{
+dirLook = direction;
 vert = 0;
 horz = 0;
-if (!flashItemGetMsg)
+}
+
+if (isOnIce) /* Spend 1.5 hours on ice physics. */
+{
+
+if( (!(instance_place(x+vertMovX+horzMovX,y, wallCollide))) &amp;&amp; !((instance_place(x,y+vertMovY+horzMovY, wallCollide))) )
+{
+//do nothing?
+} else
+{
+vert = 0;
+horz = 0;
+}
+
+if !(vert != 0 || horz != 0)
 {
 vert = keyboard_check(ord("W"))-keyboard_check(ord("S"));
 horz = keyboard_check(ord("A"))-keyboard_check(ord("D"));
+dirLook = direction;
+
+
+}
+
+dirLook = round(dirLook/90)*90;
+
+if (vert != 0)
+{
+horz = 0;
+} else { vert = 0; }
+
 }
 
 if (vert != 0 || horz != 0)
@@ -496,24 +567,17 @@ bobCount += 0.375;
 bobMult = lerp(bobMult,1,0.5);
 } else { bobMult = lerp(bobMult,0,0.1); if (bobMult &lt;=0.05) {bobCount = 0;} }
 
-
-var vertMovX, vertMovY;
-vertMovX = lengthdir_x(vert*movSpeed,direction);
-vertMovY = lengthdir_y(vert*movSpeed,direction);
-
-var horzMovX, horzMovY;
-horzMovX = lengthdir_x(horz*movSpeed,direction-90);
-horzMovY = lengthdir_y(horz*movSpeed,direction-90);
-
 if((!instance_place(x+vertMovX+horzMovX,y, wallCollide) &amp;&amp; !instance_place(x+vertMovX+horzMovX,y, wallInvis)) || keyboard_check(ord("Q")))
 {
 x+=vertMovX+horzMovX;
-} else { x = xprevious };
+canMoveIce = false;
+} else { x = xprevious; };
 
 if((!instance_place(x,y+vertMovY+horzMovY, wallCollide) &amp;&amp; !instance_place(x,y+vertMovY+horzMovY, wallInvis)) || keyboard_check(ord("Q")))
 {
 y+=vertMovY+horzMovY;
-} else { y = yprevious };
+canMoveIce = false;
+} else { y = yprevious; };
 </string>
           </argument>
         </arguments>
@@ -1388,6 +1452,70 @@ draw_set_color(c_white);
         <exetype>2</exetype>
         <functionname></functionname>
         <codestring></codestring>
+        <whoName>floorWood</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw floorWood
+d3d_set_culling(0);
+
+draw_set_color($0066b4);
+
+textureF = sprite_get_texture(tiles_Floor,25);
+
+d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
+
+d3d_set_culling(1);
+
+draw_set_color(c_white);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>floorIce</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw floorIce
+d3d_set_culling(0);
+
+draw_set_color($f07676);
+
+textureF = sprite_get_texture(tiles_Floor,16);
+
+d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
+
+d3d_set_culling(1);
+
+draw_set_color(c_white);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
         <whoName>ladderDownObject</whoName>
         <relative>0</relative>
         <isnot>0</isnot>
@@ -1551,18 +1679,20 @@ if (instance_position(x-4,y,wallMain))
 {
 d3d_transform_add_translation(-6,0,0);
 }
-if (instance_position(x+16,y,wallMain))
+else if (instance_position(x+16,y,wallMain))
 {
 d3d_transform_add_translation(6,0,0);
 }
-
-if (instance_position(x,y-4,wallMain))
+else if (instance_position(x,y-4,wallMain))
 {
 d3d_transform_add_translation(0,-6,0);
 }
-if (instance_position(x,y+16,wallMain))
+else if (instance_position(x,y+16,wallMain))
 {
 d3d_transform_add_translation(0,6,0);
+}
+else {
+d3d_transform_add_translation(0,0,6);
 }
 
 d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);

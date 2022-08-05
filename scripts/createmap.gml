@@ -52,6 +52,12 @@ for (i = 0; i < w; i++) { // cycle through width of image
             case ($ff0000): //Water
                 obj = floorWater;
                 break;
+            case ($003a65): //WoodenFloor
+                obj = floorWood;
+                break;
+            case ($603f3f): //Ice!
+                obj = floorIce;
+                break;
             case ($ffff00): //Breakable Wall
             if (global.ObjectInteractableStatusX[i,global.currentRoom]==true || global.ObjectInteractableStatusY[j,global.currentRoom]==true)
             {

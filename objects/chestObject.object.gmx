@@ -52,11 +52,11 @@ isOpen = false;
           <argument>
             <kind>1</kind>
             <string>///Force open if already used
-/*
-if (global.ObjectInteractableStatusX[(x-8)/16,global.currentRoom] == true || global.ObjectInteractableStatusY[(y-8)/16,global.currentRoom] == true)
+
+if (global.chestIsOpen[idoC,global.currentRoom] == true)
 {
 isOpen=true;
-}*/
+}
 </string>
           </argument>
         </arguments>
