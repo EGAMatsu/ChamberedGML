@@ -32,25 +32,37 @@ switch (room)
     case(startMap):
     global.roomName = start;
     global.currentRoom = 0;
+    if (global.doMusic)
+    {
     audio_play_sound(startPrison,64,true);
+    }
         break;
         
     case(dungeonMap):
     global.roomName = dungeon; 
     global.currentRoom = 1;
+    if (global.doMusic)
+    {
     audio_play_sound(startDungeon,64,true);
+    }
         break;
         
     case(overworldMap):
     global.roomName = overworld; 
     global.currentRoom = 1;
+    if (global.doMusic)
+    {
     audio_play_sound(startOverworld,64,true);
+    }
         break;
         
     case(iceMap):
     global.roomName = ice; 
     global.currentRoom = 1;
+    if (global.doMusic)
+    {
     audio_play_sound(startIce,64,true);
+    }
         break;
         
     default:

@@ -99,6 +99,10 @@ bobCount = 0;
 d3d_start();
 d3d_set_culling(1);
 
+itemGot = "MISSINGNO.";
+itemDesc = "MISSINGNO."
+itemCurrGet = 0;
+
 hasSlid = 0;
 
 playerCanUse = true;
@@ -451,6 +455,7 @@ if (keyboard_check_pressed(vk_space))
         if (chestHit.idoC == 3 &amp;&amp; room == dungeonMap)
         {
         global.hasPowerGlove = true;
+        itemCurrGet = 0;
         flashItemGetMsg = true;
         alarm_set(1,room_speed*2.5);
         }
@@ -459,6 +464,7 @@ if (keyboard_check_pressed(vk_space))
         {
         global.hasGun = true;
         global.gunAmmo += 20;
+        itemCurrGet = 1;
         flashItemGetMsg = true;
         alarm_set(1,room_speed*2.5);
         }
@@ -684,19 +690,71 @@ canMoveIce = false;
 switch (room)
 {
     case (startMap):
-        global.wallColor = $E1CCB1;
-        global.floorColor = $FFFFFF;
+        global.wallColor = $E2CEB3;
+        global.floorColor = $9BA09C;
         break;
     case (dungeonMap):
-        global.wallColor = $5448c6;
-        global.floorColor = $51488d;
+        global.wallColor = $5449c6;
+        global.floorColor = $514A8E;
         break;
     case (overworldMap):
-        global.floorColor = $51814e;
+        global.wallColor = $a0a0a0;
+        global.floorColor = $538250;
         break;
     case (iceMap):
-        global.wallColor = $7e7233;
-        global.floorColor = $dedbb7;
+        global.wallColor = $FFe86b;
+        global.floorColor = $E0DBb8;
+        break;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Item grabbing
+switch (itemCurrGet)
+{
+    case (0):
+    itemGot = "Power Glove"
+    itemDesc = "Smaaaash!!"
+        break;
+    case (1):
+    itemGot = "Pistol"
+    itemDesc = "Pew, pew, pew!"
+        break;
+    case (2):
+    itemGot = "Flippers"
+    itemDesc = "Splish splash!"
+        break;
+    case (3):
+    itemGot = "Cutters"
+    itemDesc = "Snip, snip!"
+        break;
+    case (4):
+    itemGot = "Skates"
+    itemDesc = "Sharp!"
+        break;
+    case (5):
+    itemGot = "Potion"
+    itemDesc = "Healthy!"
+        break;
+    default:
+    itemGot = "MISSINGNO."
         break;
 }
 </string>
@@ -845,8 +903,8 @@ switch (room)
         case 3:
             mapGoto = 3;
             global.doesForceLocation = true;
-            global.forceX = 43;
-            global.forceY = 40;
+            global.forceX = 44;
+            global.forceY = 41;
             break;
         case 2:
             mapGoto = 0;
@@ -953,12 +1011,26 @@ surface_reset_target();
             <kind>1</kind>
             <string>///Draw screen
 
+view_wview = window_get_width();
+view_hview = window_get_height();
+
 display_set_gui_size(160,120);
-surface_resize(application_surface,160,120);
 
 draw_set_color(c_black);
 draw_rectangle(0,0,320,320,0);
 draw_set_color(c_white);
+
+widthScale = 120 * (window_get_width()/window_get_height());
+
+display_set_gui_size(160,120);
+surface_resize(application_surface,160,120);
+
+if (!isLoading)
+{
+draw_surface_stretched(application_surface,0,0,160,91);
+}
+
+display_set_gui_size(160,120);
 
 var bob = ((abs(sin(bobCount/1.5)))/2) * bobMult;
 var currFrame = 8;
@@ -966,7 +1038,10 @@ var currFrame = 8;
 draw_set_color(c_white);
 if (!isLoading)
 {
-draw_surface_stretched(application_surface,0,0,160,91);
+
+display_set_gui_size(widthScale,120);
+
+var itemPos = (widthScale/2)+(widthScale/16);
 
 switch (currentItem)
 {
@@ -994,7 +1069,7 @@ if (global.hasPowerGlove)
     {
     currFrame = 16;
     } else { currFrame = 8; }
-        draw_sprite_ext(tiles_items,currFrame,(160/2)+(160/16)-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$63c3ff,1);
+        draw_sprite_ext(tiles_items,currFrame,itemPos-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$63c3ff,1);
     }
     break;
     
@@ -1021,14 +1096,17 @@ if (global.hasGun)
     {
     currFrame = 17;
     } else { currFrame = 9; }
-        draw_sprite_ext(tiles_items,currFrame,(160/2)+(160/16)-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$ffffff,1);
+        draw_sprite_ext(tiles_items,currFrame,itemPos-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$ffffff,1);
     }
     break;
 }
 
+display_set_gui_size(160,120);
+
 }
 if (isLoading)
 {
+    display_set_gui_size(widthScale,120);
     switch (mapGoto)
     {
     case (0):
@@ -1038,12 +1116,13 @@ if (isLoading)
         draw_loading("Dungeons");
         break;
     case (2):
-        draw_loading("Overworld");
+        draw_loading("Island");
         break;
     default:
         draw_loading("MISSINGNO.");
         break;
     }
+    display_set_gui_size(160,120);
 }
 //draw_surface(surf_UI,0,0);
 draw_sprite(uiBar,0,0,91);
@@ -1110,28 +1189,34 @@ draw_rectangle(0,0,160,160,0);
 draw_set_alpha(1);
 draw_set_color(c_white);
 
+display_set_gui_size(widthScale, 120);
+
+var halfGUI = display_get_gui_width()/2;
+
 draw_set_alpha_test(true);
 
-draw_sprite_ext(tiles_items,0,56,8-3,3,3,0,$63c3ff,1);
+draw_sprite_ext(tiles_items,0,halfGUI-24,8-3,3,3,0,$63c3ff,1);
 
 draw_set_halign(fa_center);
 
 draw_set_color($7effff);
-draw_text(160/2,50,"You found the Power Glove!");
+draw_text(halfGUI,50,"You found the " + itemGot + "!");
 draw_set_color($9f9f9f);
-draw_text(160/2,60,"Smaaaash!");
+draw_text(halfGUI,60,itemDesc);
 
 if (userCanExitMsg)
 {
 draw_set_color($7effff);
-draw_text(160/2-6,80,"-&gt; Continue");
+draw_text(halfGUI-6,80,"-&gt; Continue");
 } else
 {
 draw_set_color($9f9f9f);
-draw_text(160/2,80,"Continue");
+draw_text(halfGUI,80,"Continue");
 }
 
 }
+
+display_set_gui_size(160, 120);
 
 draw_set_color(c_white);
 draw_set_halign(fa_left);
@@ -1173,7 +1258,7 @@ var bob = ((abs(sin(bobCount)+1)-1)/2) * bobMult;
 
 var height = 6;
 
-var res = 160/91
+var res = (120*(window_get_width()/window_get_height()))/91
 
 d3d_set_projection_ext(x,y,height+bob,x+lengthdir_x(9999,direction),y+lengthdir_y(9999,direction),height+bob,0,0,-1,70,res,0.1,256);
 

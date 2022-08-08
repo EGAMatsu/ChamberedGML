@@ -27,6 +27,8 @@
             <kind>1</kind>
             <string>///Set A
 
+global.doMusic = false;
+
 global.currentRoom = 0;
 
 global.ObjectInteractableStatusX[0,0] = true;
