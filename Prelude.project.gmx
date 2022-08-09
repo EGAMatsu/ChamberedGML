@@ -18,24 +18,34 @@
     <sound>sound\thud</sound>
     <sound>sound\pickup</sound>
     <sound>sound\slide</sound>
+    <sound>sound\altair</sound>
   </sounds>
   <sprites name="sprites">
-    <sprite>sprites\start</sprite>
-    <sprite>sprites\dungeon</sprite>
-    <sprite>sprites\overworld</sprite>
-    <sprite>sprites\ice</sprite>
-    <sprite>sprites\startTest</sprite>
-    <sprite>sprites\wallNorm</sprite>
-    <sprite>sprites\playerBox</sprite>
-    <sprite>sprites\objBox</sprite>
-    <sprite>sprites\tiles_Wall</sprite>
-    <sprite>sprites\tiles_Floor</sprite>
-    <sprite>sprites\tiles_Sprites</sprite>
-    <sprite>sprites\tiles_items</sprite>
-    <sprite>sprites\uiBar</sprite>
-    <sprite>sprites\uiBar_Selected</sprite>
-    <sprite>sprites\font</sprite>
-    <sprite>sprites\playSprite_mini</sprite>
+    <sprites name="tilesets">
+      <sprite>sprites\tiles_Wall</sprite>
+      <sprite>sprites\tiles_Floor</sprite>
+      <sprite>sprites\tiles_Sprites</sprite>
+      <sprite>sprites\tiles_items</sprite>
+    </sprites>
+    <sprites name="maps">
+      <sprite>sprites\startTest</sprite>
+      <sprite>sprites\start</sprite>
+      <sprite>sprites\dungeon</sprite>
+      <sprite>sprites\overworld</sprite>
+      <sprite>sprites\ice</sprite>
+    </sprites>
+    <sprites name="ui">
+      <sprite>sprites\font</sprite>
+      <sprite>sprites\uiBar</sprite>
+      <sprite>sprites\uiBar_Selected</sprite>
+      <sprite>sprites\playSprite_mini</sprite>
+      <sprite>sprites\titleLogo</sprite>
+    </sprites>
+    <sprites name="debugBox">
+      <sprite>sprites\wallNorm</sprite>
+      <sprite>sprites\playerBox</sprite>
+      <sprite>sprites\objBox</sprite>
+    </sprites>
   </sprites>
   <backgrounds name="background">
     <background>background\startRef</background>

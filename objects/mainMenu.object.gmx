@@ -8,6 +8,56 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="7" enumb="4">
+      <action>
+        <libid>1</libid>
+        <id>211</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>altair</sound>
+          </argument>
+          <argument>
+            <kind>3</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>611</id>
+        <kind>6</kind>
+        <userelative>-1</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>menuOption</string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -26,8 +76,128 @@
           <argument>
             <kind>1</kind>
             <string>///Draw prototype menu
-draw_text(0,0,"F1 = New Game#F2 = Networked Game#F3 = Join Networked Game");
+var windWidth = 120*(window_get_width()/window_get_height());
 
+menuOption -= (keyboard_check_pressed(vk_up) || keyboard_check_pressed(ord("W"))) - (keyboard_check_pressed(vk_down) || keyboard_check_pressed(ord("S")));
+
+if (keyboard_check_pressed(vk_space))
+{
+
+    switch(menuOption)
+    {
+        case (0):
+        audio_play_sound(click,0,0);
+        global.gameMode = 0;
+        room_goto(startMap);
+        break;
+        
+        case (1):
+        audio_play_sound(click,0,0);
+        global.gameMode = 1;
+        instance_create(0,0,oServer);
+        room_goto(startMap);
+        break;
+        
+        case (2):
+        audio_play_sound(click,0,0);
+        global.gameMode = 1;
+        instance_create(0,0,oClient);
+        room_goto(startMap);
+        break;
+        
+        default:
+        audio_play_sound(thud,0,0);
+        global.gameMode = 0;
+        break;
+    }
+}
+
+var
+menuLimit = 4,
+selectColor = $7effff,
+deselectColor = $909090,
+selectArrow = "-&gt; ",
+newGameText = "New game",
+instructionText = "Instructions",
+aboutText = "About",
+hostText = "Host Local Server",
+joinText = "Join Local Server",
+optionText = "Options";
+
+if (menuOption &gt; menuLimit)
+{
+menuOption = 0;
+}
+if (menuOption &lt; 0)
+{
+menuOption = menuLimit;
+}
+
+var currText = "";
+
+display_set_gui_size(windWidth, 120);
+
+for (i=0; i&lt;menuLimit+1; i++)
+{
+    switch(i)
+    {
+        case(0):
+        if (menuOption == 0)
+        {
+        draw_set_color(selectColor);
+        currText = selectArrow+newGameText;
+        } else {
+        draw_set_color(deselectColor);
+        currText = newGameText;
+        }
+        break;
+        case(1):
+        if (menuOption == 1)
+        {
+        draw_set_color(selectColor);
+        currText = selectArrow+hostText;
+        } else {
+        draw_set_color(deselectColor);
+        currText = hostText;
+        }
+        break;
+        case(2):
+        if (menuOption == 2)
+        {
+        draw_set_color(selectColor);
+        currText = selectArrow+joinText;
+        } else {
+        draw_set_color(deselectColor);
+        currText = joinText;
+        }
+        break;
+        case(3):
+        if (menuOption == 3)
+        {
+        draw_set_color(selectColor);
+        currText = selectArrow+instructionText;
+        } else {
+        draw_set_color(deselectColor);
+        currText = instructionText;
+        }
+        break;
+        case(4):
+        if (menuOption == 4)
+        {
+        draw_set_color(selectColor);
+        currText = selectArrow+aboutText;
+        } else {
+        draw_set_color(deselectColor);
+        currText = aboutText;
+        }
+        break;
+    }
+    draw_text(windWidth/4,60+(i*8),currText);
+}
+
+draw_sprite(titleLogo, 0, windWidth/2, 9);
+
+/*
 if (keyboard_check_pressed(vk_f1))
 {
 global.gameMode = 0;
@@ -45,6 +215,7 @@ global.gameMode = 1;
 instance_create(0,0,oClient);
 room_goto(startMap);
 }
+*/
 </string>
           </argument>
         </arguments>
