@@ -25,8 +25,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>x+=8;
+            <string>//Setup object
+x+=8;
 y+=8;
+
+ball_id = instance_number(wallBall);
 
 currFrame = 0;
 

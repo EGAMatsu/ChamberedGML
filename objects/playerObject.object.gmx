@@ -411,8 +411,6 @@ switch (currentItem)
         var objHit = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallBreakable,1,playerObject));
         if (objHit)
             {
-            global.ObjectInteractableStatusX[objHit.x/16,global.currentRoom] = false;
-            global.ObjectInteractableStatusY[objHit.y/16,global.currentRoom] = false;
             instance_destroy(objHit);
             audio_play_sound(crumble,0,0);
             }
@@ -1428,6 +1426,47 @@ d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
 d3d_transform_set_identity();
 
 d3d_set_culling(1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>oOtherClient</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw oOtherClient
+
+if (room_get_name(room) == roomName)
+{
+
+d3d_set_culling(0);
+
+texture = sprite_get_texture(tiles_Sprites,36);
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(lerp(xprevious,x,0.5),lerp(yprevious,y,0.5),0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+d3d_set_culling(1);
+
+}
 </string>
           </argument>
         </arguments>

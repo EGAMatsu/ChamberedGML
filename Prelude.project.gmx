@@ -46,38 +46,67 @@
     <script>scripts\d3d_draw_shaded_box.gml</script>
     <script>scripts\collision_line_first.gml</script>
     <script>scripts\draw_loading.gml</script>
+    <scripts name="Networking">
+      <script>scripts\server_create.gml</script>
+      <script>scripts\client_connect.gml</script>
+    </scripts>
   </scripts>
   <objects name="objects">
-    <object>objects\startLevelCreate</object>
-    <object>objects\wallMain</object>
-    <object>objects\floorWater</object>
-    <object>objects\floorWood</object>
-    <object>objects\floorIce</object>
-    <object>objects\floorPlate</object>
-    <object>objects\wallFoliage</object>
-    <object>objects\wallInvis</object>
-    <object>objects\floorHole_ForBalls</object>
-    <object>objects\wallBall</object>
-    <object>objects\wallBreakable</object>
-    <object>objects\wallCellFront</object>
-    <object>objects\wallCellFront_Broken</object>
-    <object>objects\itemTrophy</object>
-    <object>objects\ladderDownObject</object>
-    <object>objects\ladderUpObject</object>
-    <object>objects\torchObject</object>
-    <object>objects\chestObject</object>
-    <object>objects\playerObject</object>
-    <object>objects\wallCollide</object>
-    <object>objects\startGameGlobals</object>
-    <object>objects\partDerbis</object>
+    <objects name="Globals">
+      <object>objects\startLevelCreate</object>
+      <object>objects\startGameGlobals</object>
+      <objects name="Networking">
+        <object>objects\oServer</object>
+        <object>objects\oServerClient</object>
+        <object>objects\oClient</object>
+        <object>objects\oOtherClient</object>
+      </objects>
+    </objects>
+    <objects name="GameObjects">
+      <objects name="Wall">
+        <object>objects\wallMain</object>
+        <object>objects\wallBreakable</object>
+        <object>objects\wallCellFront</object>
+        <object>objects\wallFoliage</object>
+        <object>objects\wallInvis</object>
+        <object>objects\wallBall</object>
+      </objects>
+      <objects name="Floor">
+        <object>objects\floorHole_ForBalls</object>
+        <object>objects\floorPlate</object>
+        <object>objects\floorIce</object>
+        <object>objects\floorWood</object>
+        <object>objects\floorWater</object>
+      </objects>
+      <objects name="Object">
+        <object>objects\itemTrophy</object>
+        <object>objects\ladderUpObject</object>
+        <object>objects\ladderDownObject</object>
+        <object>objects\torchObject</object>
+        <object>objects\chestObject</object>
+        <object>objects\partDerbis</object>
+        <object>objects\wallCellFront_Broken</object>
+      </objects>
+      <objects name="Entity">
+        <object>objects\playerObject</object>
+      </objects>
+      <object>objects\wallCollide</object>
+      <object>objects\mainMenu</object>
+    </objects>
   </objects>
   <rooms name="rooms">
     <room>rooms\startGame</room>
+    <room>rooms\menu</room>
     <room>rooms\startMap</room>
     <room>rooms\dungeonMap</room>
     <room>rooms\overworldMap</room>
     <room>rooms\iceMap</room>
   </rooms>
+  <constants number="3">
+    <constant name="MESSAGE_JOIN">2</constant>
+    <constant name="UPDATE_SPEED">1</constant>
+    <constant name="MESSAGE_MOVE">1</constant>
+  </constants>
   <help>
     <rtf>help.rtf</rtf>
   </help>
