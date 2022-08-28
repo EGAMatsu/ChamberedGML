@@ -51,6 +51,10 @@ while (true)
             xx = buffer_read(buffer,buffer_f32);
             yy = buffer_read(buffer,buffer_f32);
             rN = buffer_read(buffer,buffer_string);
+            iI = buffer_read(buffer,buffer_bool);
+            iCG = buffer_read(buffer,buffer_u8);
+            dir = buffer_read(buffer,buffer_f32);
+            isH = buffer_read(buffer,buffer_bool);
             
             buffer_seek(oServer.send_buffer, buffer_seek_start,0);
             
@@ -60,6 +64,10 @@ while (true)
             buffer_write(oServer.send_buffer, buffer_f32, xx);
             buffer_write(oServer.send_buffer, buffer_f32, yy);
             buffer_write(oServer.send_buffer, buffer_string, rN);
+            buffer_write(oServer.send_buffer, buffer_bool, iI);
+            buffer_write(oServer.send_buffer, buffer_u8, iCG);
+            buffer_write(oServer.send_buffer, buffer_f32, dir);
+            buffer_write(oServer.send_buffer, buffer_bool, iI);
             
             with(oServerClient)
             {

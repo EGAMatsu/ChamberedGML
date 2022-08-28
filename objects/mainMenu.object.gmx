@@ -8,6 +8,28 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>224</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_another_room</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>11</kind>
+            <room>startMap</room>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="4">
       <action>
         <libid>1</libid>
@@ -57,6 +79,30 @@
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>611</id>
+        <kind>6</kind>
+        <userelative>-1</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>isLoading</string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="8" enumb="64">
       <action>
@@ -75,34 +121,49 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Draw prototype menu
+            <string>///Draw menu
 var windWidth = 120*(window_get_width()/window_get_height());
 
 menuOption -= (keyboard_check_pressed(vk_up) || keyboard_check_pressed(ord("W"))) - (keyboard_check_pressed(vk_down) || keyboard_check_pressed(ord("S")));
+    
+    if ((keyboard_check_pressed(vk_up) || keyboard_check_pressed(ord("W"))) || (keyboard_check_pressed(vk_down) || keyboard_check_pressed(ord("S"))))
+    {
+        audio_play_sound(click2,0,0);
+    }
 
 if (keyboard_check_pressed(vk_space))
 {
-
     switch(menuOption)
     {
         case (0):
+        isLoading = true;
         audio_play_sound(click,0,0);
         global.gameMode = 0;
-        room_goto(startMap);
+        alarm_set(0,1);
         break;
         
         case (1):
+        isLoading = true;
         audio_play_sound(click,0,0);
         global.gameMode = 1;
         instance_create(0,0,oServer);
-        room_goto(startMap);
+        alarm_set(0,1);
         break;
         
         case (2):
+        isLoading = true;
         audio_play_sound(click,0,0);
         global.gameMode = 1;
         instance_create(0,0,oClient);
-        room_goto(startMap);
+        alarm_set(0,1);
+        break;
+        
+        case (3):
+        audio_play_sound(click,0,0);
+        global.tex_walls = sprite_add_texture("texturepack/64/walls.png");
+        global.tex_floors = sprite_add_texture("texturepack/64/floors.png");;
+        global.tex_sprites = tiles_Sprites;
+        global.tex_items = tiles_items;
         break;
         
         default:
@@ -113,7 +174,7 @@ if (keyboard_check_pressed(vk_space))
 }
 
 var
-menuLimit = 4,
+menuLimit = 5,
 selectColor = $7effff,
 deselectColor = $909090,
 selectArrow = "-&gt; ",
@@ -137,6 +198,9 @@ var currText = "";
 
 display_set_gui_size(windWidth, 120);
 
+if (!isLoading)
+{
+
 for (i=0; i&lt;menuLimit+1; i++)
 {
     switch(i)
@@ -151,6 +215,7 @@ for (i=0; i&lt;menuLimit+1; i++)
         currText = newGameText;
         }
         break;
+        
         case(1):
         if (menuOption == 1)
         {
@@ -161,6 +226,7 @@ for (i=0; i&lt;menuLimit+1; i++)
         currText = hostText;
         }
         break;
+        
         case(2):
         if (menuOption == 2)
         {
@@ -171,8 +237,20 @@ for (i=0; i&lt;menuLimit+1; i++)
         currText = joinText;
         }
         break;
+        
         case(3):
         if (menuOption == 3)
+        {
+        draw_set_color(selectColor);
+        currText = selectArrow+optionText;
+        } else {
+        draw_set_color(deselectColor);
+        currText = optionText;
+        }
+        break;
+        
+        case(4):
+        if (menuOption == 4)
         {
         draw_set_color(selectColor);
         currText = selectArrow+instructionText;
@@ -181,8 +259,9 @@ for (i=0; i&lt;menuLimit+1; i++)
         currText = instructionText;
         }
         break;
-        case(4):
-        if (menuOption == 4)
+        
+        case(5):
+        if (menuOption == 5)
         {
         draw_set_color(selectColor);
         currText = selectArrow+aboutText;
@@ -191,11 +270,16 @@ for (i=0; i&lt;menuLimit+1; i++)
         currText = aboutText;
         }
         break;
+        
     }
     draw_text(windWidth/4,60+(i*8),currText);
 }
 
 draw_sprite(titleLogo, 0, windWidth/2, 9);
+
+} else {
+draw_centText("Loading game...");
+}
 
 /*
 if (keyboard_check_pressed(vk_f1))

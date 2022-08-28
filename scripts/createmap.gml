@@ -40,6 +40,9 @@ for (i = 0; i < w; i++) { // cycle through width of image
         obj = noone; // object to create at coordinates
 
         switch (col) {
+        
+            /* Non entity */
+            
             case ($ffffff): //Main Wall
                 obj = wallMain;
                 break;
@@ -109,8 +112,14 @@ for (i = 0; i < w; i++) { // cycle through width of image
                 obj = floorHole_ForBalls;
                 break;
                 
+            /* Entity */
+                
             case ($00ffff): //Player
                 obj = playerObject;
+                break;
+                
+            case ($0000ff): //Bat
+                obj = monsterBat;
                 break;
                 
             case (0):

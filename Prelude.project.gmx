@@ -19,13 +19,18 @@
     <sound>sound\pickup</sound>
     <sound>sound\slide</sound>
     <sound>sound\altair</sound>
+    <sound>sound\click2</sound>
+    <sound>sound\kill</sound>
+    <sound>sound\hurt</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="tilesets">
-      <sprite>sprites\tiles_Wall</sprite>
-      <sprite>sprites\tiles_Floor</sprite>
-      <sprite>sprites\tiles_Sprites</sprite>
-      <sprite>sprites\tiles_items</sprite>
+      <sprites name="originalGame">
+        <sprite>sprites\tiles_Wall</sprite>
+        <sprite>sprites\tiles_Floor</sprite>
+        <sprite>sprites\tiles_Sprites</sprite>
+        <sprite>sprites\tiles_items</sprite>
+      </sprites>
     </sprites>
     <sprites name="maps">
       <sprite>sprites\startTest</sprite>
@@ -44,6 +49,7 @@
     <sprites name="debugBox">
       <sprite>sprites\wallNorm</sprite>
       <sprite>sprites\playerBox</sprite>
+      <sprite>sprites\projBox</sprite>
       <sprite>sprites\objBox</sprite>
     </sprites>
   </sprites>
@@ -55,12 +61,22 @@
     <script>scripts\createmap.gml</script>
     <script>scripts\d3d_draw_shaded_box.gml</script>
     <script>scripts\collision_line_first.gml</script>
-    <script>scripts\draw_loading.gml</script>
     <scripts name="Networking">
       <script>scripts\server_create.gml</script>
       <script>scripts\client_connect.gml</script>
     </scripts>
+    <scripts name="sprite">
+      <script>scripts\draw_loading.gml</script>
+      <script>scripts\draw_centText.gml</script>
+      <script>scripts\sprite_add_texture.gml</script>
+    </scripts>
+    <script>scripts\set_shader_interp.gml</script>
   </scripts>
+  <shaders name="shaders">
+    <shader type="GLSLES">shaders\shd_interp.shader</shader>
+    <shader type="GLSLES">shaders\shd_ref_interp.shader</shader>
+    <shader type="GLSLES">shaders\shd_ref_interp_map.shader</shader>
+  </shaders>
   <objects name="objects">
     <objects name="Globals">
       <object>objects\startLevelCreate</object>
@@ -94,11 +110,15 @@
         <object>objects\ladderDownObject</object>
         <object>objects\torchObject</object>
         <object>objects\chestObject</object>
+        <object>objects\bulletObjectPlayer</object>
         <object>objects\partDerbis</object>
         <object>objects\wallCellFront_Broken</object>
       </objects>
       <objects name="Entity">
         <object>objects\playerObject</object>
+        <object>objects\monsterBat</object>
+        <object>objects\monsterCorpse</object>
+        <object>objects\isMonster</object>
       </objects>
       <object>objects\wallCollide</object>
       <object>objects\mainMenu</object>

@@ -42,6 +42,10 @@ while (true)
             xx = buffer_read(buffer,buffer_f32);
             yy = buffer_read(buffer,buffer_f32);
             rN = buffer_read(buffer,buffer_string);
+            iI = buffer_read(buffer,buffer_bool);
+            iCG = buffer_read(buffer,buffer_u8);
+            dir = buffer_read(buffer,buffer_f32);
+            isH = buffer_read(buffer,buffer_bool);
             
             if (ds_map_exists(clientmap, string(client)))
             {
@@ -49,6 +53,10 @@ while (true)
                 clientObject.x = xx;
                 clientObject.y = yy;
                 clientObject.roomName = rN;
+                clientObject.direction = dir;
+                clientObject.itemCurrGet = iCG;
+                clientObject.isInteracting = iI;
+                clientObject.isSpaceHeld = isH;
             } else {
                 var l = instance_create(xx,yy,oOtherClient);
                 clientmap[? string(client)] = l;
@@ -77,9 +85,16 @@ while (true)
 
 buffer_seek(send_buffer, buffer_seek_start, 0);
 
+if (instance_exists(playerObject))
+{
 buffer_write(send_buffer, buffer_u8, MESSAGE_MOVE);
 buffer_write(send_buffer, buffer_f32, playerObject.x);
 buffer_write(send_buffer, buffer_f32, playerObject.y);
 buffer_write(send_buffer, buffer_string, room_get_name(room));
+buffer_write(send_buffer, buffer_bool, keyboard_check_pressed(vk_space));
+buffer_write(send_buffer, buffer_u8, playerObject.itemCurrGet);
+buffer_write(send_buffer, buffer_f32, playerObject.direction);
+buffer_write(send_buffer, buffer_bool, keyboard_check(vk_space));
+}
 
 network_send_raw(socket, send_buffer, buffer_tell(send_buffer));

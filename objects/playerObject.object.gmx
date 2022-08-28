@@ -49,9 +49,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Offset
+            <string>///Offset and clip
 x+=8;
-y+=8
+y+=8;
+
+canClip = false;
 </string>
           </argument>
         </arguments>
@@ -151,6 +153,56 @@ switch (room)
         break;
     }
 </string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>611</id>
+        <kind>6</kind>
+        <userelative>-1</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>inPain</string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="3">
+      <action>
+        <libid>1</libid>
+        <id>611</id>
+        <kind>6</kind>
+        <userelative>-1</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>inPain</string>
+          </argument>
+          <argument>
+            <kind>0</kind>
+            <string>false</string>
           </argument>
         </arguments>
       </action>
@@ -424,8 +476,39 @@ switch (currentItem)
                 audio_play_sound(roll,0,0);
                 }
             }
+        var objHit4 = (collision_line_first(x,y,x+lengthdir_x(handHitRange/1.5,direction),y+lengthdir_y(handHitRange,direction),isMonster,1,playerObject));
+        if (objHit4)
+            {
+            if (global.hasPowerGlove)
+                {
+                objHit4.hp--;
+                objHit4.isHurt = true;
+                objHit4.alarm[0] = room_speed * 0.15;
+                audio_play_sound(hurt,0,0);
+                }
+            }
         }
         break;
+    
+    case 1:
+    
+        if (keyboard_check_pressed(vk_space))
+        {
+            if (global.gunAmmo &gt; 0)
+            {
+                var bull = instance_create(x+lengthdir_x(9,direction),y+lengthdir_y(9,direction),bulletObjectPlayer);
+                bull.speed = 5;
+                bull.direction = direction;
+                global.gunAmmo--;
+            }
+        }
+        else if (global.gunAmmo == 0 &amp;&amp; keyboard_check_pressed(vk_space))
+        {
+            hasFired = false;
+        }
+        
+        break;
+        
     case 2: /* Pliers */
         if (keyboard_check_pressed(vk_space))
         {
@@ -458,6 +541,14 @@ if (keyboard_check_pressed(vk_space))
         alarm_set(1,room_speed*2.5);
         }
         
+        else if (chestHit.idoC == 1 &amp;&amp; room == iceMap)
+        {
+        global.hasSkates = true;
+        itemCurrGet = 4;
+        flashItemGetMsg = true;
+        alarm_set(1,room_speed*2.5);
+        }
+        
         else if (chestHit.idoC == 1 &amp;&amp; room == startMap)
         {
         global.hasGun = true;
@@ -468,7 +559,8 @@ if (keyboard_check_pressed(vk_space))
         }
         
         else {
-        global.hasPowerGlove = true;
+        global.hasPotion = true;
+        itemCurrGet = 5;
         flashItemGetMsg = true;
         alarm_set(1,room_speed*2.5);
         }
@@ -591,7 +683,7 @@ dirVelo = clamp(dirVelo, -5, 5);
 direction += dirVelo;
 
 /* Movement */
-if (!flashItemGetMsg &amp;&amp; (!isOnIce || currentItem == 3))
+if (!flashItemGetMsg &amp;&amp; (!isOnIce || (currentItem == 3 &amp;&amp; global.hasSkates)))
 {
 dirLook = direction;
 vert = keyboard_check(ord("W"))-keyboard_check(ord("S"));
@@ -604,7 +696,7 @@ vert = 0;
 horz = 0;
 }
 
-if (currentItem != 3) /* toDo, make skates */
+if (currentItem != 3 || !global.hasSkates) /* toDo, make skates */
 {
 if (isOnIce) /* Spend 1.5 hours on ice physics. */
 {
@@ -653,13 +745,13 @@ bobCount += 0.375;
 bobMult = lerp(bobMult,1,0.5);
 } else { bobMult = lerp(bobMult,0,0.1); if (bobMult &lt;=0.05) {bobCount = 0;} }
 
-if((!instance_place(x+vertMovX+horzMovX,y, wallCollide) &amp;&amp; !instance_place(x+vertMovX+horzMovX,y, wallInvis)) || keyboard_check(ord("Q")))
+if((!instance_place(x+vertMovX+horzMovX,y, wallCollide) &amp;&amp; (!instance_place(x+vertMovX+horzMovX,y, wallInvis)) &amp;&amp; !canClip) || keyboard_check(ord("Q")))
 {
 x+=vertMovX+horzMovX;
 canMoveIce = false;
 } else { x = xprevious; };
 
-if((!instance_place(x,y+vertMovY+horzMovY, wallCollide) &amp;&amp; !instance_place(x,y+vertMovY+horzMovY, wallInvis)) || keyboard_check(ord("Q")))
+if((!instance_place(x,y+vertMovY+horzMovY, wallCollide) &amp;&amp; (!instance_place(x,y+vertMovY+horzMovY, wallInvis)) &amp;&amp; !canClip) || keyboard_check(ord("Q")))
 {
 y+=vertMovY+horzMovY;
 canMoveIce = false;
@@ -759,32 +851,6 @@ switch (itemCurrGet)
           </argument>
         </arguments>
       </action>
-    </event>
-    <event eventtype="4" ename="ladderUpObject">
-      <action>
-        <libid>1</libid>
-        <id>211</id>
-        <kind>0</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>0</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_sound</functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>6</kind>
-            <sound>ladder</sound>
-          </argument>
-          <argument>
-            <kind>3</kind>
-            <string>0</string>
-          </argument>
-        </arguments>
-      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -801,47 +867,23 @@ switch (itemCurrGet)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Prep going to next map
-isLoading = true;
-
-switch (room)
+            <string>///Ouch
+if (distance_to_object(instance_nearest(x,y,isMonster)) &lt; 1.75)
 {
-    case(startMap):
-    mapGoto = 2;
-    global.doesForceLocation = true;
-    global.forceX = 37;
-    global.forceY = 19;
-    global.prisonBallsRemoved = true;
-        break;
-    case(dungeonMap):
-    mapGoto = 0;
-        break;
+
+if (!inPain)
+{
+
+alarm[3] = 20;
+
+audio_play_sound(hurt,0,0);
+
+health--;
+inPain = true;
+}
+
 }
 </string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>301</id>
-        <kind>0</kind>
-        <userelative>-1</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>1</exetype>
-        <functionname>action_set_alarm</functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>0</kind>
-            <string>1</string>
-          </argument>
-          <argument>
-            <kind>4</kind>
-            <string>0</string>
           </argument>
         </arguments>
       </action>
@@ -948,6 +990,154 @@ switch (room)
         </arguments>
       </action>
     </event>
+    <event eventtype="4" ename="ladderUpObject">
+      <action>
+        <libid>1</libid>
+        <id>211</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_sound</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>6</kind>
+            <sound>ladder</sound>
+          </argument>
+          <argument>
+            <kind>3</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Prep going to next map
+isLoading = true;
+
+switch (room)
+{
+    case(startMap):
+    mapGoto = 2;
+    global.doesForceLocation = true;
+    global.forceX = 37;
+    global.forceY = 19;
+    global.prisonBallsRemoved = true;
+        break;
+        
+    case(dungeonMap):
+    mapGoto = 0;
+        break;
+        
+    case(iceMap):
+    mapGoto = 2;
+    global.doesForceLocation = true;
+    global.forceX = 41;
+    global.forceY = 15;
+    global.prisonBallsRemoved = true;
+        break;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>301</id>
+        <kind>0</kind>
+        <userelative>-1</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_set_alarm</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>0</kind>
+            <string>1</string>
+          </argument>
+          <argument>
+            <kind>4</kind>
+            <string>0</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="73">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///No filtering
+texture_set_interpolation(0);
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="72">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Start filtering
+
+if (sprite_get_width(global.tex_walls) &gt;= 512)
+{
+texture_set_interpolation(1);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -1008,6 +1198,9 @@ surface_reset_target();
           <argument>
             <kind>1</kind>
             <string>///Draw screen
+var rW, rH;
+
+shader_reset();
 
 view_wview = window_get_width();
 view_hview = window_get_height();
@@ -1020,12 +1213,21 @@ draw_set_color(c_white);
 
 widthScale = 120 * (window_get_width()/window_get_height());
 
-display_set_gui_size(160,120);
-surface_resize(application_surface,160,120);
+rW = widthScale;
+rH = 91;
+
+if (global.trueRes)
+{
+rW = window_get_width();
+rH = round(91 * (window_get_height()/91));
+}
+
+display_set_gui_size(widthScale,120);
+surface_resize(application_surface,rW,rH);
 
 if (!isLoading)
 {
-draw_surface_stretched(application_surface,0,0,160,91);
+draw_surface_stretched(application_surface,0,0,widthScale,91);
 }
 
 display_set_gui_size(160,120);
@@ -1067,7 +1269,7 @@ if (global.hasPowerGlove)
     {
     currFrame = 16;
     } else { currFrame = 8; }
-        draw_sprite_ext(tiles_items,currFrame,itemPos-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$63c3ff,1);
+        draw_sprite_ext(global.tex_items,currFrame,itemPos-(dirVelo*1.5),91-(16*3)+(bob*5),(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$63C3FF,1);
     }
     break;
     
@@ -1094,7 +1296,7 @@ if (global.hasGun)
     {
     currFrame = 17;
     } else { currFrame = 9; }
-        draw_sprite_ext(tiles_items,currFrame,itemPos-(dirVelo*1.5),91-(16*3)+(bob*5),3,3,0,$ffffff,1);
+        draw_sprite_ext(global.tex_items,currFrame,itemPos-(dirVelo*1.5),91-(16*3)+(bob*5),(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$eaeaea,1);
     }
     break;
 }
@@ -1125,15 +1327,15 @@ if (isLoading)
 //draw_surface(surf_UI,0,0);
 draw_sprite(uiBar,0,0,91);
 draw_sprite(uiBar_Selected,0,30+(currentItem*16),93);
-
+var sizeTile = 16/sprite_get_width(global.tex_items);
 if (global.hasPowerGlove)
 {
-draw_sprite_ext(tiles_items,0,30,93,1,1,0,$63c3ff,1);
+draw_sprite_ext(global.tex_items,0,30,93,sizeTile,sizeTile,0,$63C3FF,1);
 }
 
 if (global.hasGun)
 {
-draw_sprite_ext(tiles_items,1,30+(16*1),93,1,1,0,$ffffff,1);
+draw_sprite_ext(global.tex_items,1,30+(16*1),93,sizeTile,sizeTile,0,$eaeaea,1);
 
 //CurrentAmmo
 draw_set_halign(fa_right);
@@ -1193,7 +1395,7 @@ var halfGUI = display_get_gui_width()/2;
 
 draw_set_alpha_test(true);
 
-draw_sprite_ext(tiles_items,0,halfGUI-24,8-3,3,3,0,$63c3ff,1);
+draw_sprite_ext(tiles_items,0,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$63c3ff,1);
 
 draw_set_halign(fa_center);
 
@@ -1218,6 +1420,8 @@ display_set_gui_size(160, 120);
 
 draw_set_color(c_white);
 draw_set_halign(fa_left);
+
+shader_reset();
 
 d3d_start();
 </string>
@@ -1262,7 +1466,6 @@ d3d_set_projection_ext(x,y,height+bob,x+lengthdir_x(9999,direction),y+lengthdir_
 
 draw_set_alpha_test(true);
 draw_set_alpha_test_ref_value(128);
-
 </string>
           </argument>
         </arguments>
@@ -1286,23 +1489,25 @@ draw_set_alpha_test_ref_value(128);
             <string>///Draw Flooring
 draw_set_color(global.floorColor);
 
+set_shader_interp(global.tex_floors);
+
 switch (room)
 {
 default:
-texture = sprite_get_texture(tiles_Floor,0);
+texture = sprite_get_texture(global.tex_floors,0);
 break;
 case (overworldMap):
-texture = sprite_get_texture(tiles_Floor,24);
+texture = sprite_get_texture(global.tex_floors,24);
 break;
 }
 
 d3d_set_culling(0);
 
-d3d_draw_floor(0,0,16,room_width,room_height,16,texture,64,64);
+d3d_draw_floor(0,0,16.01,room_width,room_height,16.01,texture,64,64);
 
 if (room != overworldMap)
 {
-d3d_draw_floor(0,0,0,room_width,room_height,0,texture,64,64);
+d3d_draw_floor(0,0,-0.01,room_width,room_height,-0.01,texture,64,64);
 }
 
 d3d_set_culling(1);
@@ -1328,9 +1533,16 @@ draw_set_color($FFFFFF);
           <argument>
             <kind>1</kind>
             <string>///Draw WallMain
-texture = sprite_get_texture(tiles_Wall,0);
+texture = sprite_get_texture(global.tex_walls,0);
 
 draw_set_color(global.wallColor);
+
+//Start filtering
+
+if (sprite_get_width(global.tex_walls) &gt;= 512)
+{
+texture_set_interpolation(1);
+}
 
 d3d_draw_shaded_box(x,y,0,x+16,y+16,16,texture,1,1);
 
@@ -1356,7 +1568,7 @@ draw_set_color($FFFFFF);
           <argument>
             <kind>1</kind>
             <string>///Draw WallFoliage
-texture = sprite_get_texture(tiles_Wall,8);
+texture = sprite_get_texture(global.tex_walls,8);
 
 draw_set_color($33ae2ad);
 
@@ -1384,7 +1596,7 @@ draw_set_color($FFFFFF);
           <argument>
             <kind>1</kind>
             <string>///Draw WallBreakable
-texture = sprite_get_texture(tiles_Wall,1);
+texture = sprite_get_texture(global.tex_walls,1);
 
 draw_set_color(global.wallColor);
 
@@ -1414,7 +1626,7 @@ draw_set_color($FFFFFF);
             <string>///Draw CellWall
 d3d_set_culling(0);
 
-texture = sprite_get_texture(tiles_Sprites,0);
+texture = sprite_get_texture(global.tex_sprites,0);
 
 d3d_transform_set_identity();
 
@@ -1453,7 +1665,7 @@ if (room_get_name(room) == roomName)
 
 d3d_set_culling(0);
 
-texture = sprite_get_texture(tiles_Sprites,36);
+texture = sprite_get_texture(global.tex_sprites,36);
 
 d3d_transform_set_identity();
 
@@ -1492,7 +1704,7 @@ d3d_set_culling(0);
 
 draw_set_color($7effff);
 
-texture = sprite_get_texture(tiles_Sprites,18);
+texture = sprite_get_texture(global.tex_sprites,18);
 
 d3d_transform_set_identity();
 
@@ -1533,10 +1745,10 @@ draw_set_color($00ffff);
 
 if (isOpen)
 {
-texture = sprite_get_texture(tiles_Sprites,17);
+texture = sprite_get_texture(global.tex_sprites,17);
 } else
 {
-texture = sprite_get_texture(tiles_Sprites,16);
+texture = sprite_get_texture(global.tex_sprites,16);
 }
 
 d3d_transform_set_identity();
@@ -1576,7 +1788,7 @@ d3d_set_culling(0);
 
 draw_set_color($93a2ae);
 
-texture = sprite_get_texture(tiles_Sprites,8 + round(currFrame));
+texture = sprite_get_texture(global.tex_sprites,8 + round(currFrame));
 
 d3d_transform_set_identity();
 
@@ -1613,7 +1825,7 @@ draw_set_color(c_white);
             <string>///Draw CellWall_Broken
 d3d_set_culling(0);
 
-texture = sprite_get_texture(tiles_Sprites,1);
+texture = sprite_get_texture(global.tex_sprites,1);
 
 d3d_transform_set_identity();
 
@@ -1650,7 +1862,7 @@ d3d_set_culling(0);
 
 draw_set_color(global.wallColor);
 
-texture = sprite_get_texture(tiles_Sprites,2);
+texture = sprite_get_texture(global.tex_sprites,2);
 
 d3d_transform_set_identity();
 
@@ -1689,7 +1901,7 @@ d3d_set_culling(0);
 
 draw_set_color($f00000);
 
-textureF = sprite_get_texture(tiles_Floor,8 + round(currFrame));
+textureF = sprite_get_texture(global.tex_floors,8 + round(currFrame));
 
 d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
 
@@ -1721,7 +1933,7 @@ d3d_set_culling(0);
 
 draw_set_color($0066b4);
 
-textureF = sprite_get_texture(tiles_Floor,25);
+textureF = sprite_get_texture(global.tex_floors,25);
 
 d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
 
@@ -1753,7 +1965,7 @@ d3d_set_culling(0);
 
 draw_set_color($f07676);
 
-textureF = sprite_get_texture(tiles_Floor,16);
+textureF = sprite_get_texture(global.tex_floors,16);
 
 d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
 
@@ -1785,8 +1997,8 @@ d3d_set_culling(0);
 
 draw_set_color(global.floorColor);
 
-texture = sprite_get_texture(tiles_Sprites,11);
-textureF = sprite_get_texture(tiles_Floor,1);
+texture = sprite_get_texture(global.tex_sprites,11);
+textureF = sprite_get_texture(global.tex_floors,1);
 
 d3d_draw_floor(x,y,15.985,x+16,y+16,15.985,textureF,1,1);
 
@@ -1829,8 +2041,8 @@ d3d_set_culling(0);
 
 draw_set_color(global.floorColor);
 
-texture = sprite_get_texture(tiles_Sprites,12);
-textureF = sprite_get_texture(tiles_Floor,1);
+texture = sprite_get_texture(global.tex_sprites,12);
+textureF = sprite_get_texture(global.tex_floors,1);
 
 d3d_draw_floor(x,y,0.01,x+16,y+16,0.01,textureF,1,1);
 
@@ -1873,8 +2085,8 @@ d3d_set_culling(0);
 
 draw_set_color(global.floorColor);
 
-texture = sprite_get_texture(tiles_Sprites,10);
-textureF = sprite_get_texture(tiles_Floor,1);
+texture = sprite_get_texture(global.tex_sprites,10);
+textureF = sprite_get_texture(global.tex_floors,1);
 
 d3d_draw_floor(x,y,15.99,x+16,y+16,15.99,textureF,1,1);
 
@@ -1908,6 +2120,132 @@ draw_set_color(c_white);
         <exetype>2</exetype>
         <functionname></functionname>
         <codestring></codestring>
+        <whoName>monsterBat</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw bat
+
+if (!isHurt)
+{
+draw_set_color($6E6682);
+} else
+{
+draw_set_color($0000FF);
+}
+
+d3d_set_culling(0);
+
+texture = sprite_get_texture(global.tex_sprites,32+round(clamp(frameCount,0,1)));
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(lerp(xprevious,x,0.5),lerp(yprevious,y,0.5),0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+d3d_set_culling(1);
+
+draw_set_color($ffffff);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>bulletObjectPlayer</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw bulletPlayer
+
+draw_set_color($ffffff);
+
+d3d_set_culling(0);
+
+texture = sprite_get_texture(global.tex_sprites,24);
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(lerp(xprevious,x,0.5),lerp(yprevious,y,0.5),0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+d3d_set_culling(1);
+
+draw_set_color($ffffff);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>monsterCorpse</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Draw corpse
+
+draw_set_color($222222);
+
+d3d_set_culling(0);
+
+texture = sprite_get_texture(global.tex_sprites,5);
+
+d3d_transform_set_identity();
+
+d3d_transform_set_rotation_z(playerObject.direction);
+d3d_transform_add_translation(lerp(xprevious,x,0.5),lerp(yprevious,y,0.5),0);
+
+d3d_draw_wall(0,-8,0,0,8,16,texture,1,1);
+
+d3d_transform_set_identity();
+
+d3d_set_culling(1);
+
+draw_set_color($ffffff);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
         <whoName>torchObject</whoName>
         <relative>0</relative>
         <isnot>0</isnot>
@@ -1925,7 +2263,7 @@ d3d_set_fog(1, c_black, 0, 128);
 
 d3d_set_culling(0);
 
-texture = sprite_get_texture(tiles_Sprites,3+round(startFrame));
+texture = sprite_get_texture(global.tex_sprites,3+round(startFrame));
 
 d3d_transform_set_identity();
 
@@ -1967,6 +2305,22 @@ draw_set_color($FFFFFF);
 </string>
           </argument>
         </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="119">
+      <action>
+        <libid>1</libid>
+        <id>331</id>
+        <kind>0</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>0</useapplyto>
+        <exetype>1</exetype>
+        <functionname>action_restart_game</functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
       </action>
     </event>
   </events>
