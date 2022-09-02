@@ -159,11 +159,13 @@ if (keyboard_check_pressed(vk_space))
         break;
         
         case (3):
+        audio_play_sound(thud,0,0);
+        /*
         audio_play_sound(click,0,0);
         global.tex_walls = sprite_add_texture("texturepack/64/walls.png");
         global.tex_floors = sprite_add_texture("texturepack/64/floors.png");;
         global.tex_sprites = tiles_Sprites;
-        global.tex_items = tiles_items;
+        global.tex_items = tiles_items;*/
         break;
         
         default:
