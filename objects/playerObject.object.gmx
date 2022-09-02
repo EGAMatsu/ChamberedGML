@@ -492,7 +492,7 @@ switch (currentItem)
     
     case 1:
     
-        if (keyboard_check_pressed(vk_space))
+        if (keyboard_check_pressed(vk_space) &amp;&amp; global.hasGun)
         {
             if (global.gunAmmo &gt; 0)
             {
@@ -502,7 +502,7 @@ switch (currentItem)
                 global.gunAmmo--;
             }
         }
-        else if (global.gunAmmo == 0 &amp;&amp; keyboard_check_pressed(vk_space))
+        else if (global.gunAmmo == 0 &amp;&amp; keyboard_check_pressed(vk_space) &amp;&amp; global.hasGun)
         {
             hasFired = false;
         }
@@ -510,7 +510,7 @@ switch (currentItem)
         break;
         
     case 2: /* Pliers */
-        if (keyboard_check_pressed(vk_space))
+        if (keyboard_check_pressed(vk_space) &amp;&amp; global.hasCutters)
         {
         var objHit2 = (collision_line_first(x,y,x+lengthdir_x(handHitRange,direction),y+lengthdir_y(handHitRange,direction),wallCellFront,1,playerObject));
         if (objHit2)
@@ -560,7 +560,7 @@ if (keyboard_check_pressed(vk_space))
         
         else {
         global.hasPotion = true;
-        itemCurrGet = 5;
+        itemCurrGet = 6;
         flashItemGetMsg = true;
         alarm_set(1,room_speed*2.5);
         }
@@ -839,7 +839,7 @@ switch (itemCurrGet)
     itemGot = "Skates"
     itemDesc = "Sharp!"
         break;
-    case (5):
+    case (6):
     itemGot = "Potion"
     itemDesc = "Healthy!"
         break;
@@ -1395,7 +1395,33 @@ var halfGUI = display_get_gui_width()/2;
 
 draw_set_alpha_test(true);
 
-draw_sprite_ext(tiles_items,0,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$63c3ff,1);
+/* Draw item screen */
+
+switch (itemCurrGet)
+{
+    default:
+    draw_sprite_ext(tiles_items,itemCurrGet,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$63c3ff,1);
+        break;
+    case(0):
+    draw_sprite_ext(tiles_items,itemCurrGet,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$63c3ff,1);
+        break;
+    case(1):
+    draw_sprite_ext(tiles_items,itemCurrGet,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$eaeaea,1);
+        break;
+    case(2):
+    draw_sprite_ext(tiles_items,itemCurrGet,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$7CBBFF,1);
+        break;
+    case(3):
+    draw_sprite_ext(tiles_items,itemCurrGet,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$cccccc,1);
+        break;
+    case(4):
+    draw_sprite_ext(tiles_items,itemCurrGet,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$AE70FF,1);
+        break;
+    case(6):
+    draw_sprite_ext(tiles_items,itemCurrGet,halfGUI-24,8-3,(16*3)/sprite_get_width(global.tex_items),(16*3)/sprite_get_height(global.tex_items),0,$4AFF47,1);
+        break;
+}
+
 
 draw_set_halign(fa_center);
 
